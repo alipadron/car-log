@@ -40,8 +40,12 @@ Start the API (serves on http://localhost:8000, SQLite database at
 
 ```sh
 cd api
-php artisan serve
+composer run dev
 ```
+
+This runs the server, queue listener, and log tail together (Vite is
+excluded — the API has no frontend assets). `php artisan serve` alone
+also works if you only want the server.
 
 Start the web app (serves on http://localhost:4200, proxies `/api` to the API
 via `web/proxy.conf.json`):
