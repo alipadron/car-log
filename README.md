@@ -10,9 +10,8 @@ glossary and settled decisions, and `docs/adr/` for architectural decisions.
 
 ## Requirements
 
-- PHP 8.5 and Composer (pinned via `mise.toml` — with [mise](https://mise.jdx.dev)
-  installed, `mise install` provides the right PHP)
-- Node.js and npm
+- PHP 8.5 + Composer and Node.js 26 + npm (both pinned via `mise.toml` —
+  with [mise](https://mise.jdx.dev) installed, `mise install` provides them)
 
 ## First-run setup
 
