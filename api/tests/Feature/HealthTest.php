@@ -1,22 +1,15 @@
 <?php
 
-namespace Tests\Feature;
-
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
 
-class HealthTest extends TestCase
-{
-    public function test_health_endpoint_reports_ok_with_working_database(): void
-    {
-        $response = $this->getJson('/api/health');
-
-        $response->assertOk()->assertExactJson([
+test('health endpoint reports ok with working database', function () {
+    $this->getJson('/api/health')
+        ->assertOk()
+        ->assertExactJson([
             'status' => 'ok',
             'db' => 'ok',
         ]);
 
-        // The endpoint must be backed by a real SQLite connection.
-        $this->assertSame('sqlite', DB::connection()->getDriverName());
-    }
-}
+    // The endpoint must be backed by a real SQLite connection.
+    expect(DB::connection()->getDriverName())->toBe('sqlite');
+});
