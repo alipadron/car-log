@@ -1,4 +1,8 @@
-<main>
-  <h1>car-log</h1>
-  <p>API health: {{ health() }}</p>
-</main>
+@if (auth.token()) {
+  <main>
+    <h1>car-log</h1>
+    <app-health-status />
+  </main>
+} @else {
+  <app-unlock />
+}

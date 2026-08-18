@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\DB;
 
 test('health endpoint reports ok with working database', function () {
-    $this->getJson('/api/health')
+    $this->withHeader('Authorization', 'Bearer '.issueApiToken())
+        ->getJson('/api/health')
         ->assertOk()
         ->assertExactJson([
             'status' => 'ok',

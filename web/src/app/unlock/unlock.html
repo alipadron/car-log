@@ -1,0 +1,26 @@
+<main class="unlock">
+  <h1>car-log</h1>
+
+  <form (submit)="unlock(); $event.preventDefault()">
+    <label for="password">Password</label>
+    <input
+      id="password"
+      type="password"
+      autocomplete="current-password"
+      autofocus
+      [formField]="unlockForm.password"
+    />
+
+    @if (unlockForm.password().touched() && unlockForm.password().invalid()) {
+      <p class="error" role="alert">{{ unlockForm.password().errors()[0]?.message }}</p>
+    }
+
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+
+    <button type="submit" [disabled]="submitting()">
+      {{ submitting() ? 'Unlocking…' : 'Unlock' }}
+    </button>
+  </form>
+</main>
