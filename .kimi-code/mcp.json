@@ -4,6 +4,11 @@
       "command": "mise",
       "args": ["exec", "--", "php", "artisan", "boost:mcp"],
       "cwd": "/home/alipadron/code/car-log/api"
+    },
+    "angular-cli": {
+      "command": "npx",
+      "args": ["@angular/cli", "mcp"],
+      "cwd": "/home/alipadron/code/car-log/web"
     }
   }
 }
