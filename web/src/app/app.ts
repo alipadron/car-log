@@ -8,7 +8,6 @@ import { Unlock } from './unlock/unlock';
   selector: 'app-root',
   imports: [Unlock, HealthStatus],
   templateUrl: './app.html',
-  styleUrl: './app.css',
 })
 export class App {
   protected readonly auth = inject(Auth);

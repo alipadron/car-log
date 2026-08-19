@@ -1,25 +1,30 @@
-<main class="unlock">
-  <h1>car-log</h1>
+<main class="mx-auto mt-[20vh] w-full max-w-md px-4">
+  <h1 class="mb-6 text-2xl font-bold">car-log</h1>
 
-  <form (submit)="unlock(); $event.preventDefault()">
-    <label for="password">Password</label>
+  <form class="flex flex-col gap-3" (submit)="unlock(); $event.preventDefault()">
+    <label class="font-semibold" for="password">Password</label>
     <input
       id="password"
       type="password"
       autocomplete="current-password"
       autofocus
+      class="min-h-11 rounded-lg border border-border bg-surface px-3 text-base text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
       [formField]="unlockForm.password"
     />
 
     @if (unlockForm.password().touched() && unlockForm.password().invalid()) {
-      <p class="error" role="alert">{{ unlockForm.password().errors()[0]?.message }}</p>
+      <p class="text-sm text-danger" role="alert">{{ unlockForm.password().errors()[0]?.message }}</p>
     }
 
     @if (error()) {
-      <p class="error" role="alert">{{ error() }}</p>
+      <p class="text-sm text-danger" role="alert">{{ error() }}</p>
     }
 
-    <button type="submit" [disabled]="submitting()">
+    <button
+      type="submit"
+      class="min-h-11 rounded-lg bg-accent px-4 text-base font-semibold text-accent-ink disabled:opacity-60"
+      [disabled]="submitting()"
+    >
       {{ submitting() ? 'Unlocking…' : 'Unlock' }}
     </button>
   </form>

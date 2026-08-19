@@ -22,6 +22,14 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `NgOptimizedImage` for all static images.
   - `NgOptimizedImage` does not work for inline base64 images.
 
+## Styling
+
+- Tailwind CSS v4 utilities only; design tokens live in `src/styles.css` (`@theme`). Conventions and token values: `../docs/design.md`; decisions: `../docs/adr/0002-design-foundations.md`.
+- No per-component style files — `angular.json` sets `@schematics/angular:component` to `style: "none"`. Do not add `styleUrl` to components.
+- Use semantic token utilities (`text-danger`, `bg-surface`), not raw palette colors, in templates.
+- Flag, don't decide: when a utility cluster repeats or a UI piece has a name (button, input, card, badge), propose it as an extraction candidate with reasoning — the owner decides whether to extract. Some duplication is acceptable. Approved primitives live under `src/app/ui/`.
+- Any visual primitive not covered by `docs/design.md` (new state color, layout pattern, component family) must be approved by the owner before implementation.
+
 ## Accessibility Requirements
 
 - It MUST pass all AXE checks.

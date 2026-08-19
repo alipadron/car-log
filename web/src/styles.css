@@ -1,1 +1,58 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss';
+
+/*
+ * car-log design tokens — semantic layer over the Tailwind default palette.
+ * Values and rationale live in docs/design.md; decisions in docs/adr/0002.
+ * Dark values apply automatically via prefers-color-scheme (no toggle in v1).
+ */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-pending: var(--pending);
+}
+
+:root {
+  --surface: var(--color-white);
+  --surface-muted: var(--color-zinc-100);
+  --ink: var(--color-zinc-900);
+  --ink-muted: var(--color-zinc-500);
+  --border: var(--color-zinc-200);
+  --accent: var(--color-blue-600);
+  --accent-ink: var(--color-white);
+  /* State colors are the text-safe palette steps (WCAG AA on --surface). */
+  --success: var(--color-green-700);
+  --warning: var(--color-amber-700);
+  --danger: var(--color-red-700);
+  --pending: var(--color-sky-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: var(--color-zinc-950);
+    --surface-muted: var(--color-zinc-900);
+    --ink: var(--color-zinc-100);
+    --ink-muted: var(--color-zinc-400);
+    --border: var(--color-zinc-800);
+    --accent: var(--color-blue-500);
+    --accent-ink: var(--color-white);
+    --success: var(--color-green-400);
+    --warning: var(--color-amber-400);
+    --danger: var(--color-red-400);
+    --pending: var(--color-sky-400);
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+  }
+}

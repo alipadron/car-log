@@ -46,6 +46,7 @@ kept product-shaped so multi-user is possible later without a rewrite.
 | 11 | i18n & units | Configurable UI language, distance unit (km/mi), and currency from day one. |
 | 12 | Schedules | Seeded templates per vehicle type, editable, custom allowed. |
 | 13 | Offline sync | IndexedDB outbox on the device; entries captured offline are replayed to the API in order when the server is reachable, then cleared. Append-mostly data + single user ⇒ no conflict resolution beyond ordered replay. |
+| 14 | Design foundations | Tool-first minimal: Tailwind v4 + semantic tokens (light/dark), no component CSS files. See `docs/adr/0002-design-foundations.md` and `docs/design.md`. |
 
 ## Data model sketch
 

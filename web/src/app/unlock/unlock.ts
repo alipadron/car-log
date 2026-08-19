@@ -17,7 +17,6 @@ interface TokenResponse {
   selector: 'app-unlock',
   imports: [FormField],
   templateUrl: './unlock.html',
-  styleUrl: './unlock.css',
 })
 export class Unlock {
   private readonly http = inject(HttpClient);
