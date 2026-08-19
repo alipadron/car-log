@@ -35,13 +35,13 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    httpTesting.expectOne('/api/health').flush({ status: 'ok', db: 'ok' });
+    httpTesting.expectOne('/api/vehicles').flush({ data: [] });
     await fixture.whenStable();
     fixture.detectChanges();
 
     const text = (fixture.nativeElement as HTMLElement).textContent;
     expect(text).toContain('car-log');
-    expect(text).toContain('API health: ok');
+    expect(text).toContain('Vehicles');
   });
 
   it('returns to the unlock screen when the API answers 401', async () => {
@@ -50,7 +50,7 @@ describe('App', () => {
     fixture.detectChanges();
 
     httpTesting
-      .expectOne('/api/health')
+      .expectOne('/api/vehicles')
       .flush({ message: 'Unauthenticated.' }, { status: 401, statusText: 'Unauthorized' });
     await fixture.whenStable();
     fixture.detectChanges();

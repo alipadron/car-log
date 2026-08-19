@@ -1,0 +1,78 @@
+@if (editing() !== undefined) {
+  <app-vehicle-form
+    [vehicle]="editing() ?? null"
+    (saved)="onSaved($event)"
+    (cancelled)="onCancelled()"
+  />
+} @else {
+  <h2 class="mb-4 text-xl font-bold">Vehicles</h2>
+
+  @if (error()) {
+    <p class="mb-4 text-sm text-danger" role="alert">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="text-ink-muted">Loading…</p>
+  } @else if (vehicles().length === 0 && !error()) {
+    <p class="mb-4 text-ink-muted">No vehicles yet. Add your first one to start logging work.</p>
+  } @else {
+    <ul class="flex flex-col gap-3">
+      @for (vehicle of vehicles(); track vehicle.id) {
+        <li class="rounded-lg border border-border bg-surface-muted p-4">
+          <p class="font-semibold">{{ vehicle.name }}</p>
+          <p class="text-sm text-ink-muted">
+            {{ vehicle.make }} {{ vehicle.model }} · {{ vehicle.year }} · {{ vehicle.type }}
+          </p>
+
+          @if (confirmingDeleteId() === vehicle.id) {
+            <p class="mt-3 text-sm">Delete {{ vehicle.name }}? This cannot be undone.</p>
+            <div class="mt-2 flex gap-2">
+              <button
+                type="button"
+                class="min-h-11 flex-1 rounded-lg border border-border px-4 text-base font-semibold text-danger disabled:opacity-60"
+                [disabled]="deleting()"
+                (click)="deleteVehicle(vehicle)"
+              >
+                {{ deleting() ? 'Deleting…' : 'Delete it' }}
+              </button>
+              <button
+                type="button"
+                class="min-h-11 flex-1 rounded-lg border border-border px-4 text-base font-semibold text-ink"
+                (click)="confirmingDeleteId.set(null)"
+              >
+                Keep it
+              </button>
+            </div>
+          } @else {
+            <div class="mt-2 flex gap-2">
+              <button
+                type="button"
+                class="min-h-11 flex-1 rounded-lg border border-border px-4 text-base font-semibold text-ink"
+                (click)="editVehicle(vehicle)"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                class="min-h-11 flex-1 rounded-lg border border-border px-4 text-base font-semibold text-danger"
+                (click)="confirmingDeleteId.set(vehicle.id)"
+              >
+                Delete
+              </button>
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+
+  @if (!loading() && !error()) {
+    <button
+      type="button"
+      class="mt-4 min-h-11 w-full rounded-lg bg-accent px-4 text-base font-semibold text-accent-ink"
+      (click)="addVehicle()"
+    >
+      Add vehicle
+    </button>
+  }
+}

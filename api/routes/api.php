@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,7 @@ Route::middleware('auth.token')->group(function () {
             'db' => 'ok',
         ]);
     });
+
+    Route::apiResource('vehicles', VehicleController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
 });

@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 
 import { Auth } from './auth/auth';
-import { HealthStatus } from './health-status/health-status';
 import { Unlock } from './unlock/unlock';
+import { Vehicles } from './vehicles/vehicles';
 
 @Component({
   selector: 'app-root',
-  imports: [Unlock, HealthStatus],
+  imports: [Unlock, Vehicles],
   templateUrl: './app.html',
 })
 export class App {
