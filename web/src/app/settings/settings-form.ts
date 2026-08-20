@@ -1,10 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormField, form, pattern, required, submit, validate } from '@angular/forms/signals';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n } from '../i18n/translations';
+import { PageHeading } from '../shared/page-heading';
 import { DistanceUnit, Language } from './settings-api';
 import { Settings } from './settings';
 
@@ -19,7 +21,7 @@ interface SettingsFormModel {
  */
 @Component({
   selector: 'app-settings-form',
-  imports: [FormField, HlmButtonImports, HlmInput, HlmLabel],
+  imports: [FormField, HlmButtonImports, HlmCardImports, HlmInput, HlmLabel, PageHeading],
   templateUrl: './settings-form.html',
 })
 export class SettingsForm {

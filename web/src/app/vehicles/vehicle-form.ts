@@ -6,6 +6,7 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n } from '../i18n/translations';
+import { PageHeading } from '../shared/page-heading';
 import { Vehicle, VehiclePayload, VehiclesApi, VehicleType } from './vehicles-api';
 
 interface VehicleFormModel {
@@ -22,7 +23,7 @@ interface VehicleFormModel {
  */
 @Component({
   selector: 'app-vehicle-form',
-  imports: [FormField, HlmButtonImports, HlmCardImports, HlmInput, HlmLabel],
+  imports: [FormField, HlmButtonImports, HlmCardImports, HlmInput, HlmLabel, PageHeading],
   templateUrl: './vehicle-form.html',
 })
 export class VehicleForm {

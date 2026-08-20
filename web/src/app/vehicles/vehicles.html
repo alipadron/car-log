@@ -5,7 +5,7 @@
     (cancelled)="onCancelled()"
   />
 } @else {
-  <h2 class="mb-4 text-xl font-bold">{{ i18n.t()('vehicles.title') }}</h2>
+  <app-page-heading [title]="i18n.t()('vehicles.title')" />
 
   @if (error()) {
     <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>

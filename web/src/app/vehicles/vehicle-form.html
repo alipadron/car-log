@@ -1,9 +1,7 @@
 <form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
-  <div hlmCard>
-    <div hlmCardHeader>
-      <h2 hlmCardTitle>{{ vehicle() ? i18n.t()('vehicle_form.title.edit') : i18n.t()('vehicle_form.title.add') }}</h2>
-    </div>
+  <app-page-heading [title]="vehicle() ? i18n.t()('vehicle_form.title.edit') : i18n.t()('vehicle_form.title.add')" />
 
+  <div hlmCard>
     <div hlmCardContent class="flex flex-col gap-4">
       <label hlmLabel for="name">{{ i18n.t()('vehicle_form.name') }}</label>
       <input

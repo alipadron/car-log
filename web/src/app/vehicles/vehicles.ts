@@ -3,6 +3,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
 import { I18n } from '../i18n/translations';
+import { PageHeading } from '../shared/page-heading';
 import { Vehicle, VehiclesApi } from './vehicles-api';
 import { VehicleForm } from './vehicle-form';
 
@@ -13,7 +14,7 @@ import { VehicleForm } from './vehicle-form';
  */
 @Component({
   selector: 'app-vehicles',
-  imports: [VehicleForm, HlmButtonImports, HlmCardImports],
+  imports: [VehicleForm, HlmButtonImports, HlmCardImports, PageHeading],
   templateUrl: './vehicles.html',
 })
 export class Vehicles {

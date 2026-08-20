@@ -1,11 +1,9 @@
 <form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
-  <div hlmCard>
-    <div hlmCardHeader>
-      <h2 hlmCardTitle>{{ i18n.t()('settings.title') }}</h2>
-      <p hlmCardDescription>{{ i18n.t()('settings.description') }}</p>
-    </div>
+  <app-page-heading [title]="i18n.t()('settings.title')" />
 
+  <div hlmCard>
     <div hlmCardContent class="flex flex-col gap-4">
+      <p class="text-muted-foreground text-sm">{{ i18n.t()('settings.description') }}</p>
       <label hlmLabel for="language">{{ i18n.t()('settings.language') }}</label>
       <select hlmInput id="language" [formField]="settingsForm.language">
         <option value="en">{{ i18n.t()('settings.language.en') }}</option>
