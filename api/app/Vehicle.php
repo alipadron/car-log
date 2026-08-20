@@ -47,4 +47,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Repair::class);
     }
+
+    public function maintenanceSchedules(): HasMany
+    {
+        return $this->hasMany(MaintenanceSchedule::class);
+    }
 }

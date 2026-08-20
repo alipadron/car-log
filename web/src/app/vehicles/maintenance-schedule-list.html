@@ -1,0 +1,52 @@
+@if (error()) {
+  <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="text-muted-foreground">Loading…</p>
+} @else if (schedules().length === 0 && !error()) {
+  <p class="text-muted-foreground mb-4">{{ i18n.t()('schedules.empty') }}</p>
+} @else {
+  <ul class="flex flex-col gap-3">
+    @for (schedule of schedules(); track schedule.id) {
+      <li hlmCard>
+        <div hlmCardContent>
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="font-medium">{{ schedule.name }}</span>
+              <p class="text-muted-foreground text-sm">{{ formatInterval(schedule) }}</p>
+            </div>
+            <button
+              hlmBtn
+              variant="ghost"
+              size="sm"
+              type="button"
+              class="text-destructive hover:text-destructive"
+              (click)="deleteSchedule(schedule)"
+            >
+              {{ i18n.t()('schedules.delete') }}
+            </button>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+}
+
+@if (!loading()) {
+  <div class="mt-4 flex flex-col gap-2">
+    <button hlmBtn type="button" class="w-full" (click)="add.emit()">
+      {{ i18n.t()('schedules.add') }}
+    </button>
+    <button
+      hlmBtn
+      variant="outline"
+      type="button"
+      class="w-full"
+      [disabled]="seeding()"
+      (click)="seedTemplates()"
+    >
+      {{ seeding() ? 'Seeding…' : i18n.t()('schedules.seed') }}
+    </button>
+  </div>
+}

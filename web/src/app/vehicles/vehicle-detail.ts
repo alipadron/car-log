@@ -9,10 +9,17 @@ import { OdometerEntryForm } from './odometer-entry-form';
 import { OdometerEntryList } from './odometer-entry-list';
 import { RepairForm } from './repair-form';
 import { RepairList } from './repair-list';
+import { MaintenanceScheduleForm } from './maintenance-schedule-form';
+import { MaintenanceScheduleList } from './maintenance-schedule-list';
 
 @Component({
   selector: 'app-vehicle-detail',
-  imports: [HlmButtonImports, HlmCardImports, PageHeading, OdometerEntryForm, OdometerEntryList, RepairForm, RepairList],
+  imports: [
+    HlmButtonImports, HlmCardImports, PageHeading,
+    OdometerEntryForm, OdometerEntryList,
+    RepairForm, RepairList,
+    MaintenanceScheduleForm, MaintenanceScheduleList,
+  ],
   templateUrl: './vehicle-detail.html',
 })
 export class VehicleDetail {
@@ -21,17 +28,19 @@ export class VehicleDetail {
   readonly vehicle = input.required<Vehicle>();
   readonly back = output<void>();
 
-  protected readonly activeTab = signal<'odometer' | 'repairs'>('odometer');
+  protected readonly activeTab = signal<'odometer' | 'repairs' | 'schedules'>('odometer');
   protected readonly showOdometerForm = signal(false);
   protected readonly showRepairForm = signal(false);
+  protected readonly showScheduleForm = signal(false);
 
   protected goBack(): void {
     this.back.emit();
   }
 
-  protected switchTab(tab: 'odometer' | 'repairs'): void {
+  protected switchTab(tab: 'odometer' | 'repairs' | 'schedules'): void {
     this.activeTab.set(tab);
     this.showOdometerForm.set(false);
     this.showRepairForm.set(false);
+    this.showScheduleForm.set(false);
   }
 }

@@ -56,8 +56,34 @@ interface RepairsResponse {
   data: Repair[];
 }
 
+// --- Maintenance schedules ---
+
+export interface MaintenanceSchedule {
+  id: number;
+  uuid: string;
+  vehicle_id: number;
+  name: string;
+  interval_km: number | null;
+  interval_months: number | null;
+  created_at: string;
+}
+
+export interface MaintenanceSchedulePayload {
+  name: string;
+  interval_km: number | null;
+  interval_months: number | null;
+}
+
+interface MaintenanceScheduleResponse {
+  data: MaintenanceSchedule;
+}
+
+interface MaintenanceSchedulesResponse {
+  data: MaintenanceSchedule[];
+}
+
 /**
- * Talks to the odometer-entries and repairs APIs nested under vehicles.
+ * Talks to the odometer-entries, repairs, and maintenance-schedules APIs nested under vehicles.
  * Creates carry a client-generated UUID for idempotent outbox replay.
  */
 @Service()
@@ -101,6 +127,44 @@ export class VehicleDetailApi {
   ): Promise<Repair> {
     const response = await firstValueFrom(
       this.http.post<RepairResponse>(`/api/vehicles/${vehicleId}/repairs`, payload),
+    );
+    return response.data;
+  }
+
+  // --- Maintenance schedules ---
+
+  async listMaintenanceSchedules(vehicleId: number): Promise<MaintenanceSchedule[]> {
+    const response = await firstValueFrom(
+      this.http.get<MaintenanceSchedulesResponse>(`/api/vehicles/${vehicleId}/maintenance-schedules`),
+    );
+    return response.data;
+  }
+
+  async createMaintenanceSchedule(
+    vehicleId: number,
+    payload: MaintenanceSchedulePayload & { uuid: string },
+  ): Promise<MaintenanceSchedule> {
+    const response = await firstValueFrom(
+      this.http.post<MaintenanceScheduleResponse>(
+        `/api/vehicles/${vehicleId}/maintenance-schedules`,
+        payload,
+      ),
+    );
+    return response.data;
+  }
+
+  async deleteMaintenanceSchedule(vehicleId: number, scheduleId: number): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(`/api/vehicles/${vehicleId}/maintenance-schedules/${scheduleId}`),
+    );
+  }
+
+  async seedMaintenanceTemplates(vehicleId: number): Promise<MaintenanceSchedule[]> {
+    const response = await firstValueFrom(
+      this.http.post<MaintenanceSchedulesResponse>(
+        `/api/vehicles/${vehicleId}/maintenance-schedules/seed`,
+        {},
+      ),
     );
     return response.data;
   }

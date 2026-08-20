@@ -1,0 +1,53 @@
+<form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
+  <app-page-heading [title]="i18n.t()('schedules.add')" />
+
+  <div hlmCard>
+    <div hlmCardContent class="flex flex-col gap-4">
+      <label hlmLabel for="name">{{ i18n.t()('schedules.name') }}</label>
+      <input
+        hlmInput
+        id="name"
+        type="text"
+        autocomplete="off"
+        autofocus
+        [formField]="scheduleForm.name"
+      />
+      @if (scheduleForm.name().touched() && scheduleForm.name().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(scheduleForm.name().errors()[0]!.message!) }}
+        </p>
+      }
+
+      <label hlmLabel for="interval_km">{{ i18n.t()('schedules.interval_km') }}</label>
+      <input
+        hlmInput
+        id="interval_km"
+        type="number"
+        inputmode="numeric"
+        [placeholder]="i18n.t()('schedules.interval_km.placeholder')"
+        [formField]="scheduleForm.interval_km"
+      />
+
+      <label hlmLabel for="interval_months">{{ i18n.t()('schedules.interval_months') }}</label>
+      <input
+        hlmInput
+        id="interval_months"
+        type="number"
+        inputmode="numeric"
+        [placeholder]="i18n.t()('schedules.interval_months.placeholder')"
+        [formField]="scheduleForm.interval_months"
+      />
+
+      @if (error()) {
+        <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
+      }
+    </div>
+  </div>
+
+  <button hlmBtn type="submit" [disabled]="submitting()" class="w-full">
+    {{ submitting() ? i18n.t()('schedules.saving') : i18n.t()('schedules.save') }}
+  </button>
+  <button hlmBtn variant="outline" type="button" class="w-full" (click)="cancelled.emit()">
+    {{ i18n.t()('schedules.cancel') }}
+  </button>
+</form>
