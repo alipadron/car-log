@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
@@ -10,7 +10,7 @@ import { VehicleDetailApi, OdometerEntry } from './vehicle-detail-api';
   imports: [HlmButtonImports, HlmCardImports],
   templateUrl: './odometer-entry-list.html',
 })
-export class OdometerEntryList {
+export class OdometerEntryList implements OnInit {
   private readonly api = inject(VehicleDetailApi);
   protected readonly i18n = inject(I18n);
 
@@ -21,14 +21,15 @@ export class OdometerEntryList {
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
 
-  constructor() {
+  ngOnInit(): void {
     void this.load();
   }
 
   private async load(): Promise<void> {
     try {
       this.entries.set(await this.api.listOdometerEntries(this.vehicleId()));
-    } catch {
+    } catch (error) {
+      console.error(error);
       this.error.set(this.i18n.t()('odometer.load.error'));
     } finally {
       this.loading.set(false);

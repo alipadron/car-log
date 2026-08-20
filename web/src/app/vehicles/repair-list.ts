@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
@@ -10,7 +10,7 @@ import { VehicleDetailApi, Repair } from './vehicle-detail-api';
   imports: [HlmButtonImports, HlmCardImports],
   templateUrl: './repair-list.html',
 })
-export class RepairList {
+export class RepairList implements OnInit {
   private readonly api = inject(VehicleDetailApi);
   protected readonly i18n = inject(I18n);
 
@@ -21,7 +21,7 @@ export class RepairList {
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
 
-  constructor() {
+  ngOnInit(): void {
     void this.load();
   }
 
