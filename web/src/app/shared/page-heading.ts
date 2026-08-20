@@ -6,7 +6,10 @@ import { Component, input } from '@angular/core';
  */
 @Component({
   selector: 'app-page-heading',
-  template: `<h2 class="mb-4 text-xl font-semibold">{{ title() }}</h2>`,
+  template: `<h2 class="text-xl font-semibold">{{ title() }}</h2>`,
+  host: {
+    class: 'block',
+  },
 })
 export class PageHeading {
   readonly title = input.required<string>();
