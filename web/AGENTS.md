@@ -35,8 +35,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use spartan's semantic token utilities (`text-destructive`, `bg-card`,
   `text-muted-foreground`), not raw palette colors, in templates. Prefer
   helm components over hand-assembled utility clusters.
-- Interactive elements keep 44px touch targets: add `min-h-11` where helm
-  defaults are smaller.
+- 44px touch targets are baked into the vendored helm defaults (see
+  `libs/ui/button`, `libs/ui/input`); do not add `min-h-11` at call sites.
 - Any visual primitive spartan doesn't cover (new state color, layout
   pattern, component family) must be approved by the owner before
   implementation.

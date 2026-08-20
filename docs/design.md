@@ -59,9 +59,11 @@ defaults to `prefers-color-scheme`.
 
 ## Touch and interaction
 
-- Interactive elements: `min-h-11` (44px) minimum. Helm defaults are smaller
-  (`hlmBtn` is h-9), so add `class="min-h-11"` on buttons and inputs
-  (`size-11` for `size="icon"` buttons).
+- Interactive elements: 44px touch targets. This is baked into the vendored
+  helm defaults — `hlmBtn` default size is `h-11`, `size="icon"` is
+  `size-11`, `hlmInput` is `h-11` (local edits in `libs/ui/button` and
+  `libs/ui/input`, marked with a comment; regenerating those components with
+  the CLI reverts them). Call sites should NOT add `min-h-11` overrides.
 - Focus: helm components ship visible focus rings; never remove outlines
   without a replacement.
 - Primary actions on phone screens sit within one-handed reach (lower half).

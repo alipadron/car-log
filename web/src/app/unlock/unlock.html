@@ -7,7 +7,6 @@
       type="password"
       autocomplete="current-password"
       autofocus
-      class="min-h-11"
       [formField]="unlockForm.password"
     />
 
@@ -21,7 +20,7 @@
       <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
     }
 
-    <button hlmBtn type="submit" class="min-h-11" [disabled]="submitting()">
+    <button hlmBtn type="submit" [disabled]="submitting()">
       {{ submitting() ? 'Unlocking…' : 'Unlock' }}
     </button>
   </form>

@@ -36,7 +36,7 @@
                   hlmBtn
                   variant="destructive"
                   type="button"
-                  class="min-h-11 flex-1"
+                  class="flex-1"
                   [disabled]="deleting()"
                   (click)="deleteVehicle(vehicle)"
                 >
@@ -46,7 +46,7 @@
                   hlmBtn
                   variant="outline"
                   type="button"
-                  class="min-h-11 flex-1"
+                  class="flex-1"
                   (click)="confirmingDeleteId.set(null)"
                 >
                   Keep it
@@ -58,7 +58,7 @@
                   hlmBtn
                   variant="outline"
                   type="button"
-                  class="min-h-11 flex-1"
+                  class="flex-1"
                   (click)="editVehicle(vehicle)"
                 >
                   Edit
@@ -67,7 +67,7 @@
                   hlmBtn
                   variant="destructive"
                   type="button"
-                  class="min-h-11 flex-1"
+                  class="flex-1"
                   (click)="confirmingDeleteId.set(vehicle.id)"
                 >
                   Delete
@@ -81,8 +81,6 @@
   }
 
   @if (!loading() && !error()) {
-    <button hlmBtn type="button" class="mt-4 min-h-11 w-full" (click)="addVehicle()">
-      Add vehicle
-    </button>
+    <button hlmBtn type="button" class="mt-4 w-full" (click)="addVehicle()">Add vehicle</button>
   }
 }

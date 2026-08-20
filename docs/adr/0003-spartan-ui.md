@@ -57,9 +57,12 @@ Alternatives considered:
   (`.mcp.json`) and the official spartan skill is installed at
   `.agents/skills/spartan` (tracked in `skills-lock.json`). Agents use these
   to confirm component APIs instead of guessing.
-- **Touch target / iOS zoom rules from ADR 0002 still apply**: interactive
-  elements get `min-h-11` where helm defaults are smaller, and form inputs
-  stay at 16px+ (`hlmInput` is `text-base`).
+- **Touch target / iOS zoom rules from ADR 0002 still apply**: the 44px
+  minimum is baked into the vendored helm defaults — `hlmBtn` default is
+  `h-11` (icon size `size-11`, lg `h-12`) and `hlmInput` is `h-11`. These
+  are marked local edits in `web/libs/ui/`; regenerating a component with
+  the CLI reverts them, so re-apply after any regeneration. Form inputs stay
+  at 16px+ (`hlmInput` is `text-base`).
 
 ## Consequences
 
