@@ -16,6 +16,7 @@ export class MaintenanceScheduleList implements OnInit {
 
   readonly vehicleId = input.required<number>();
   readonly add = output<void>();
+  readonly edit = output<MaintenanceSchedule>();
 
   protected readonly schedules = signal<MaintenanceSchedule[]>([]);
   protected readonly loading = signal(true);

@@ -52,8 +52,9 @@
 } @else if (showScheduleForm()) {
   <app-maintenance-schedule-form
     [vehicleId]="vehicle().id"
-    (saved)="showScheduleForm.set(false)"
-    (cancelled)="showScheduleForm.set(false)"
+    [schedule]="editingSchedule()"
+    (saved)="saveScheduleForm()"
+    (cancelled)="cancelScheduleForm()"
   />
 } @else if (activeTab() === 'odometer') {
   <app-odometer-entry-list
@@ -69,6 +70,7 @@
   <app-maintenance-schedule-list
     [vehicleId]="vehicle().id"
     (add)="showScheduleForm.set(true)"
+    (edit)="startEditSchedule($event)"
   />
 }
 

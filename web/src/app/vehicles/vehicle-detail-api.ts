@@ -153,6 +153,20 @@ export class VehicleDetailApi {
     return response.data;
   }
 
+  async updateMaintenanceSchedule(
+    vehicleId: number,
+    scheduleId: number,
+    payload: Partial<MaintenanceSchedulePayload>,
+  ): Promise<MaintenanceSchedule> {
+    const response = await firstValueFrom(
+      this.http.put<MaintenanceScheduleResponse>(
+        `/api/vehicles/${vehicleId}/maintenance-schedules/${scheduleId}`,
+        payload,
+      ),
+    );
+    return response.data;
+  }
+
   async deleteMaintenanceSchedule(vehicleId: number, scheduleId: number): Promise<void> {
     await firstValueFrom(
       this.http.delete(`/api/vehicles/${vehicleId}/maintenance-schedules/${scheduleId}`),

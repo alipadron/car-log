@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormField, form, required, submit } from '@angular/forms/signals';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
@@ -7,7 +7,7 @@ import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n, msg } from '../i18n/translations';
 import { PageHeading } from '../shared/page-heading';
-import { VehicleDetailApi } from './vehicle-detail-api';
+import { MaintenanceSchedule, VehicleDetailApi } from './vehicle-detail-api';
 
 interface ScheduleFormModel {
   name: string;
@@ -20,11 +20,12 @@ interface ScheduleFormModel {
   imports: [FormField, HlmButtonImports, HlmCardImports, HlmInput, HlmLabel, PageHeading],
   templateUrl: './maintenance-schedule-form.html',
 })
-export class MaintenanceScheduleForm {
+export class MaintenanceScheduleForm implements OnInit {
   private readonly api = inject(VehicleDetailApi);
   protected readonly i18n = inject(I18n);
 
   readonly vehicleId = input.required<number>();
+  readonly schedule = input<MaintenanceSchedule | null>(null);
   readonly saved = output<void>();
   readonly cancelled = output<void>();
 
@@ -40,6 +41,21 @@ export class MaintenanceScheduleForm {
 
   protected readonly error = signal<string | null>(null);
   protected readonly submitting = signal(false);
+
+  protected get isEditing(): boolean {
+    return this.schedule() !== null;
+  }
+
+  ngOnInit(): void {
+    const existing = this.schedule();
+    if (existing) {
+      this.model.set({
+        name: existing.name,
+        interval_km: existing.interval_km?.toString() ?? '',
+        interval_months: existing.interval_months?.toString() ?? '',
+      });
+    }
+  }
 
   protected save(): void {
     submit(this.scheduleForm, async () => {
@@ -57,12 +73,20 @@ export class MaintenanceScheduleForm {
           return;
         }
 
-        await this.api.createMaintenanceSchedule(this.vehicleId(), {
-          uuid: crypto.randomUUID(),
-          name: value.name,
-          interval_km: intervalKm,
-          interval_months: intervalMonths,
-        });
+        if (this.isEditing) {
+          await this.api.updateMaintenanceSchedule(this.vehicleId(), this.schedule()!.id, {
+            name: value.name,
+            interval_km: intervalKm,
+            interval_months: intervalMonths,
+          });
+        } else {
+          await this.api.createMaintenanceSchedule(this.vehicleId(), {
+            uuid: crypto.randomUUID(),
+            name: value.name,
+            interval_km: intervalKm,
+            interval_months: intervalMonths,
+          });
+        }
         this.saved.emit();
       } catch {
         this.error.set(this.i18n.t()('schedules.error'));

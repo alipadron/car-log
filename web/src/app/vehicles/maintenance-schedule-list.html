@@ -16,16 +16,27 @@
               <span class="font-medium">{{ schedule.name }}</span>
               <p class="text-muted-foreground text-sm">{{ formatInterval(schedule) }}</p>
             </div>
-            <button
-              hlmBtn
-              variant="ghost"
-              size="sm"
-              type="button"
-              class="text-destructive hover:text-destructive"
-              (click)="deleteSchedule(schedule)"
-            >
-              {{ i18n.t()('schedules.delete') }}
-            </button>
+            <div class="flex gap-1">
+              <button
+                hlmBtn
+                variant="ghost"
+                size="sm"
+                type="button"
+                (click)="edit.emit(schedule)"
+              >
+                {{ i18n.t()('schedules.edit') }}
+              </button>
+              <button
+                hlmBtn
+                variant="ghost"
+                size="sm"
+                type="button"
+                class="text-destructive hover:text-destructive"
+                (click)="deleteSchedule(schedule)"
+              >
+                {{ i18n.t()('schedules.delete') }}
+              </button>
+            </div>
           </div>
         </div>
       </li>

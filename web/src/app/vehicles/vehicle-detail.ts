@@ -11,6 +11,7 @@ import { RepairForm } from './repair-form';
 import { RepairList } from './repair-list';
 import { MaintenanceScheduleForm } from './maintenance-schedule-form';
 import { MaintenanceScheduleList } from './maintenance-schedule-list';
+import { MaintenanceSchedule } from './vehicle-detail-api';
 
 @Component({
   selector: 'app-vehicle-detail',
@@ -32,6 +33,7 @@ export class VehicleDetail {
   protected readonly showOdometerForm = signal(false);
   protected readonly showRepairForm = signal(false);
   protected readonly showScheduleForm = signal(false);
+  protected readonly editingSchedule = signal<MaintenanceSchedule | null>(null);
 
   protected goBack(): void {
     this.back.emit();
@@ -42,5 +44,21 @@ export class VehicleDetail {
     this.showOdometerForm.set(false);
     this.showRepairForm.set(false);
     this.showScheduleForm.set(false);
+    this.editingSchedule.set(null);
+  }
+
+  protected startEditSchedule(schedule: MaintenanceSchedule): void {
+    this.editingSchedule.set(schedule);
+    this.showScheduleForm.set(true);
+  }
+
+  protected cancelScheduleForm(): void {
+    this.showScheduleForm.set(false);
+    this.editingSchedule.set(null);
+  }
+
+  protected saveScheduleForm(): void {
+    this.showScheduleForm.set(false);
+    this.editingSchedule.set(null);
   }
 }

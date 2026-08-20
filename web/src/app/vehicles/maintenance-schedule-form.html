@@ -1,5 +1,5 @@
 <form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
-  <app-page-heading [title]="i18n.t()('schedules.add')" />
+  <app-page-heading [title]="isEditing ? i18n.t()('schedules.edit') : i18n.t()('schedules.add')" />
 
   <div hlmCard>
     <div hlmCardContent class="flex flex-col gap-4">
@@ -45,7 +45,7 @@
   </div>
 
   <button hlmBtn type="submit" [disabled]="submitting()" class="w-full">
-    {{ submitting() ? i18n.t()('schedules.saving') : i18n.t()('schedules.save') }}
+    {{ submitting() ? i18n.t()('schedules.saving') : (isEditing ? i18n.t()('schedules.update') : i18n.t()('schedules.save')) }}
   </button>
   <button hlmBtn variant="outline" type="button" class="w-full" (click)="cancelled.emit()">
     {{ i18n.t()('schedules.cancel') }}
