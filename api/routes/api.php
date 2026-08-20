@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\OdometerEntryController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MaintenanceEventController;
 use App\Http\Controllers\MaintenanceScheduleController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\SettingsController;
@@ -35,6 +37,11 @@ Route::middleware('auth.token')->group(function () {
         ->only(['index', 'store', 'update', 'destroy']);
 
     Route::post('vehicles/{vehicle}/maintenance-schedules/seed', [MaintenanceScheduleController::class, 'seed']);
+
+    Route::apiResource('vehicles.maintenance-events', MaintenanceEventController::class)
+        ->only(['index', 'store']);
+
+    Route::get('/home', HomeController::class);
 
     Route::get('/settings', [SettingsController::class, 'show']);
     Route::put('/settings', [SettingsController::class, 'update']);

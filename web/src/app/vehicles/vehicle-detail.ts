@@ -11,7 +11,9 @@ import { RepairForm } from './repair-form';
 import { RepairList } from './repair-list';
 import { MaintenanceScheduleForm } from './maintenance-schedule-form';
 import { MaintenanceScheduleList } from './maintenance-schedule-list';
-import { MaintenanceSchedule } from './vehicle-detail-api';
+import { MaintenanceEventForm } from './maintenance-event-form';
+import { MaintenanceEventList } from './maintenance-event-list';
+import { MaintenanceSchedule, VehicleDetailApi } from './vehicle-detail-api';
 
 @Component({
   selector: 'app-vehicle-detail',
@@ -20,30 +22,35 @@ import { MaintenanceSchedule } from './vehicle-detail-api';
     OdometerEntryForm, OdometerEntryList,
     RepairForm, RepairList,
     MaintenanceScheduleForm, MaintenanceScheduleList,
+    MaintenanceEventForm, MaintenanceEventList,
   ],
   templateUrl: './vehicle-detail.html',
 })
 export class VehicleDetail {
+  private readonly api = inject(VehicleDetailApi);
   protected readonly i18n = inject(I18n);
 
   readonly vehicle = input.required<Vehicle>();
   readonly back = output<void>();
 
-  protected readonly activeTab = signal<'odometer' | 'repairs' | 'schedules'>('odometer');
+  protected readonly activeTab = signal<'odometer' | 'repairs' | 'schedules' | 'events'>('odometer');
   protected readonly showOdometerForm = signal(false);
   protected readonly showRepairForm = signal(false);
   protected readonly showScheduleForm = signal(false);
+  protected readonly showEventForm = signal(false);
   protected readonly editingSchedule = signal<MaintenanceSchedule | null>(null);
+  protected readonly schedules = signal<MaintenanceSchedule[]>([]);
 
   protected goBack(): void {
     this.back.emit();
   }
 
-  protected switchTab(tab: 'odometer' | 'repairs' | 'schedules'): void {
+  protected switchTab(tab: 'odometer' | 'repairs' | 'schedules' | 'events'): void {
     this.activeTab.set(tab);
     this.showOdometerForm.set(false);
     this.showRepairForm.set(false);
     this.showScheduleForm.set(false);
+    this.showEventForm.set(false);
     this.editingSchedule.set(null);
   }
 
@@ -60,5 +67,22 @@ export class VehicleDetail {
   protected saveScheduleForm(): void {
     this.showScheduleForm.set(false);
     this.editingSchedule.set(null);
+  }
+
+  protected async startAddEvent(): Promise<void> {
+    try {
+      this.schedules.set(await this.api.listMaintenanceSchedules(this.vehicle().id));
+    } catch {
+      this.schedules.set([]);
+    }
+    this.showEventForm.set(true);
+  }
+
+  protected cancelEventForm(): void {
+    this.showEventForm.set(false);
+  }
+
+  protected saveEventForm(): void {
+    this.showEventForm.set(false);
   }
 }

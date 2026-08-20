@@ -34,7 +34,7 @@ describe('App', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Password');
   });
 
-  it('shows the app shell when a token is stored', async () => {
+  it('shows the home screen by default when logged in', async () => {
     TestBed.inject(Auth).setToken('api-token');
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
@@ -42,7 +42,25 @@ describe('App', () => {
     httpTesting
       .expectOne('/api/settings')
       .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
-    httpTesting.expectOne('/api/vehicles').flush({ data: [] });
+    httpTesting
+      .expectOne('/api/home')
+      .flush({ data: [] });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent;
+    expect(text).toContain('car-log');
+  });
+
+  it('shows the vehicles list when switching to vehicles tab', async () => {
+    TestBed.inject(Auth).setToken('api-token');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    httpTesting
+      .expectOne('/api/settings')
+      .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
+    httpTesting.expectOne('/api/home').flush({ data: [] });
     await fixture.whenStable();
     fixture.detectChanges();
 
@@ -59,7 +77,7 @@ describe('App', () => {
       .expectOne('/api/settings')
       .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
     httpTesting
-      .expectOne('/api/vehicles')
+      .expectOne('/api/home')
       .flush({ message: 'Unauthenticated.' }, { status: 401, statusText: 'Unauthorized' });
     await fixture.whenStable();
     fixture.detectChanges();

@@ -82,6 +82,36 @@ interface MaintenanceSchedulesResponse {
   data: MaintenanceSchedule[];
 }
 
+// --- Maintenance events ---
+
+export interface MaintenanceEvent {
+  id: number;
+  uuid: string;
+  vehicle_id: number;
+  schedule_id: number | null;
+  notes: string | null;
+  cost: string | null;
+  performed_at: string;
+  odometer_value: number;
+  created_at: string;
+}
+
+export interface MaintenanceEventPayload {
+  schedule_id?: number | null;
+  notes?: string | null;
+  cost?: number | null;
+  performed_at: string;
+  odometer_value: number;
+}
+
+interface MaintenanceEventResponse {
+  data: MaintenanceEvent;
+}
+
+interface MaintenanceEventsResponse {
+  data: MaintenanceEvent[];
+}
+
 /**
  * Talks to the odometer-entries, repairs, and maintenance-schedules APIs nested under vehicles.
  * Creates carry a client-generated UUID for idempotent outbox replay.
@@ -165,11 +195,8 @@ export class VehicleDetailApi {
       ),
     );
     return response.data;
-  }
-
-  async deleteMaintenanceSchedule(vehicleId: number, scheduleId: number): Promise<void> {
-    await firstValueFrom(
-      this.http.delete(`/api/vehicles/${vehicleId}/maintenance-schedules/${scheduleId}`),
+  }  async deleteMaintenanceSchedule(vehicleId: number, scheduleId: number): Promise<void> {
+    await firstValueFrom(this.http.delete(`/api/vehicles/${vehicleId}/maintenance-schedules/${scheduleId}`),
     );
   }
 
@@ -178,6 +205,28 @@ export class VehicleDetailApi {
       this.http.post<MaintenanceSchedulesResponse>(
         `/api/vehicles/${vehicleId}/maintenance-schedules/seed`,
         {},
+      ),
+    );
+    return response.data;
+  }
+
+  // --- Maintenance events ---
+
+  async listMaintenanceEvents(vehicleId: number): Promise<MaintenanceEvent[]> {
+    const response = await firstValueFrom(
+      this.http.get<MaintenanceEventsResponse>(`/api/vehicles/${vehicleId}/maintenance-events`),
+    );
+    return response.data;
+  }
+
+  async createMaintenanceEvent(
+    vehicleId: number,
+    payload: MaintenanceEventPayload & { uuid: string },
+  ): Promise<MaintenanceEvent> {
+    const response = await firstValueFrom(
+      this.http.post<MaintenanceEventResponse>(
+        `/api/vehicles/${vehicleId}/maintenance-events`,
+        payload,
       ),
     );
     return response.data;

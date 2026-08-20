@@ -35,6 +35,16 @@
   >
     {{ i18n.t()('vehicle_detail.schedules') }}
   </button>
+  <button
+    hlmBtn
+    variant="ghost"
+    type="button"
+    class="flex-1"
+    [class.bg-accent]="activeTab() === 'events'"
+    (click)="switchTab('events')"
+  >
+    {{ i18n.t()('vehicle_detail.events') }}
+  </button>
 </div>
 
 @if (showOdometerForm()) {
@@ -56,6 +66,13 @@
     (saved)="saveScheduleForm()"
     (cancelled)="cancelScheduleForm()"
   />
+} @else if (showEventForm()) {
+  <app-maintenance-event-form
+    [vehicleId]="vehicle().id"
+    [schedules]="schedules()"
+    (saved)="saveEventForm()"
+    (cancelled)="cancelEventForm()"
+  />
 } @else if (activeTab() === 'odometer') {
   <app-odometer-entry-list
     [vehicleId]="vehicle().id"
@@ -66,11 +83,16 @@
     [vehicleId]="vehicle().id"
     (add)="showRepairForm.set(true)"
   />
-} @else {
+} @else if (activeTab() === 'schedules') {
   <app-maintenance-schedule-list
     [vehicleId]="vehicle().id"
     (add)="showScheduleForm.set(true)"
     (edit)="startEditSchedule($event)"
+  />
+} @else {
+  <app-maintenance-event-list
+    [vehicleId]="vehicle().id"
+    (add)="startAddEvent()"
   />
 }
 

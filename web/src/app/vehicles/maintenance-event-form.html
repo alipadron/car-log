@@ -1,0 +1,56 @@
+<form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
+  <app-page-heading [title]="i18n.t()('events.add')" />
+
+  <div hlmCard>
+    <div hlmCardContent class="flex flex-col gap-4">
+      @if (schedules().length > 0) {
+        <label hlmLabel for="schedule_id">{{ i18n.t()('events.schedule') }}</label>
+        <select hlmInput id="schedule_id" [formField]="eventForm.schedule_id">
+          <option value="">{{ i18n.t()('events.schedule.one_off') }}</option>
+          @for (schedule of schedules(); track schedule.id) {
+            <option [value]="schedule.id">{{ schedule.name }}</option>
+          }
+        </select>
+      }
+
+      <label hlmLabel for="notes">{{ i18n.t()('events.notes') }}</label>
+      <input hlmInput id="notes" type="text" autocomplete="off" [formField]="eventForm.notes" />
+
+      <label hlmLabel for="cost">{{ i18n.t()('events.cost') }}</label>
+      <input hlmInput id="cost" type="number" inputmode="decimal" step="0.01" [formField]="eventForm.cost" />
+
+      <label hlmLabel for="performed_at">{{ i18n.t()('events.performed_at') }}</label>
+      <input hlmInput id="performed_at" type="date" [formField]="eventForm.performed_at" />
+      @if (eventForm.performed_at().touched() && eventForm.performed_at().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(eventForm.performed_at().errors()[0]!.message!) }}
+        </p>
+      }
+
+      <label hlmLabel for="odometer_value">{{ i18n.t()('events.odometer_value') }}</label>
+      <input
+        hlmInput
+        id="odometer_value"
+        type="number"
+        inputmode="numeric"
+        [formField]="eventForm.odometer_value"
+      />
+      @if (eventForm.odometer_value().touched() && eventForm.odometer_value().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(eventForm.odometer_value().errors()[0]!.message!) }}
+        </p>
+      }
+
+      @if (error()) {
+        <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
+      }
+    </div>
+  </div>
+
+  <button hlmBtn type="submit" [disabled]="submitting()" class="w-full">
+    {{ submitting() ? i18n.t()('events.saving') : i18n.t()('events.save') }}
+  </button>
+  <button hlmBtn variant="outline" type="button" class="w-full" (click)="cancelled.emit()">
+    {{ i18n.t()('events.cancel') }}
+  </button>
+</form>

@@ -57,8 +57,18 @@
       variant="ghost"
       type="button"
       class="flex-1"
+      [class.bg-accent]="activeView() === 'home'"
+      (click)="activeView.set('home'); selectedVehicle.set(null)"
+    >
+      {{ i18n.t()('nav.home') }}
+    </button>
+    <button
+      hlmBtn
+      variant="ghost"
+      type="button"
+      class="flex-1"
       [class.bg-accent]="activeView() === 'vehicles'"
-      (click)="activeView.set('vehicles')"
+      (click)="activeView.set('vehicles'); selectedVehicle.set(null)"
     >
       {{ i18n.t()('nav.vehicles') }}
     </button>
@@ -68,7 +78,7 @@
       type="button"
       class="flex-1"
       [class.bg-accent]="activeView() === 'settings'"
-      (click)="activeView.set('settings')"
+      (click)="activeView.set('settings'); selectedVehicle.set(null)"
     >
       {{ i18n.t()('nav.settings') }}
     </button>
@@ -79,6 +89,8 @@
         [vehicle]="selectedVehicle()!"
         (back)="selectedVehicle.set(null)"
       />
+    } @else if (activeView() === 'home') {
+      <app-home />
     } @else if (activeView() === 'vehicles') {
       <app-vehicles (viewVehicle)="selectedVehicle.set($event)" />
     } @else {
