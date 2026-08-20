@@ -73,6 +73,22 @@ defaults to `prefers-color-scheme`.
 Inline SVG copied into the template from an MIT set (Lucide — see the theme
 toggle in `web/src/app/app.html`). No icon fonts, no CDN assets.
 
+## Form structure
+
+All create/edit forms follow the same pattern:
+
+- **Card wrapper**: `hlmCard` with `hlmCardHeader` (title via `hlmCardTitle`,
+  optional description via `hlmCardDescription`) and `hlmCardContent` holding
+  the fields.
+- **Spacing**: `gap-4` on the form and inside `hlmCardContent`.
+- **Buttons**: Submit and cancel buttons sit *outside* the card, full-width
+  (`w-full`). Cancel uses `variant="outline"`.
+- **Saved feedback**: Only on screens that stay visible after save (e.g.
+  settings). Forms that navigate away on save (e.g. vehicle create/edit)
+  don't show inline confirmation.
+- **Description**: Only when the form has non-obvious choices (settings).
+  Self-explanatory forms (vehicles) use the title alone.
+
 ## Rules for agents
 
 - Use the spartan skill (`.agents/skills/spartan`) and the `@spartan-ng/mcp`

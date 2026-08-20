@@ -1,57 +1,63 @@
-<h2 class="mb-4 text-xl font-bold">{{ vehicle() ? i18n.t()('vehicle_form.title.edit') : i18n.t()('vehicle_form.title.add') }}</h2>
+<form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
+  <div hlmCard>
+    <div hlmCardHeader>
+      <h2 hlmCardTitle>{{ vehicle() ? i18n.t()('vehicle_form.title.edit') : i18n.t()('vehicle_form.title.add') }}</h2>
+    </div>
 
-<form class="flex flex-col gap-3" (submit)="save(); $event.preventDefault()">
-  <label hlmLabel for="name">{{ i18n.t()('vehicle_form.name') }}</label>
-  <input
-    hlmInput
-    id="name"
-    type="text"
-    autocomplete="off"
-    autofocus
-    [formField]="vehicleForm.name"
-  />
-  @if (vehicleForm.name().touched() && vehicleForm.name().invalid()) {
-    <p class="text-destructive text-sm" role="alert">
-      {{ vehicleForm.name().errors()[0]?.message }}
-    </p>
-  }
+    <div hlmCardContent class="flex flex-col gap-4">
+      <label hlmLabel for="name">{{ i18n.t()('vehicle_form.name') }}</label>
+      <input
+        hlmInput
+        id="name"
+        type="text"
+        autocomplete="off"
+        autofocus
+        [formField]="vehicleForm.name"
+      />
+      @if (vehicleForm.name().touched() && vehicleForm.name().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ vehicleForm.name().errors()[0]?.message }}
+        </p>
+      }
 
-  <label hlmLabel for="type">{{ i18n.t()('vehicle_form.type') }}</label>
-  <select hlmInput id="type" [formField]="vehicleForm.type">
-    <option value="car">{{ i18n.t()('vehicle_form.type.car') }}</option>
-    <option value="bike">{{ i18n.t()('vehicle_form.type.bike') }}</option>
-  </select>
+      <label hlmLabel for="type">{{ i18n.t()('vehicle_form.type') }}</label>
+      <select hlmInput id="type" [formField]="vehicleForm.type">
+        <option value="car">{{ i18n.t()('vehicle_form.type.car') }}</option>
+        <option value="bike">{{ i18n.t()('vehicle_form.type.bike') }}</option>
+      </select>
 
-  <label hlmLabel for="make">{{ i18n.t()('vehicle_form.make') }}</label>
-  <input hlmInput id="make" type="text" autocomplete="off" [formField]="vehicleForm.make" />
-  @if (vehicleForm.make().touched() && vehicleForm.make().invalid()) {
-    <p class="text-destructive text-sm" role="alert">
-      {{ vehicleForm.make().errors()[0]?.message }}
-    </p>
-  }
+      <label hlmLabel for="make">{{ i18n.t()('vehicle_form.make') }}</label>
+      <input hlmInput id="make" type="text" autocomplete="off" [formField]="vehicleForm.make" />
+      @if (vehicleForm.make().touched() && vehicleForm.make().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ vehicleForm.make().errors()[0]?.message }}
+        </p>
+      }
 
-  <label hlmLabel for="model">{{ i18n.t()('vehicle_form.model') }}</label>
-  <input hlmInput id="model" type="text" autocomplete="off" [formField]="vehicleForm.model" />
-  @if (vehicleForm.model().touched() && vehicleForm.model().invalid()) {
-    <p class="text-destructive text-sm" role="alert">
-      {{ vehicleForm.model().errors()[0]?.message }}
-    </p>
-  }
+      <label hlmLabel for="model">{{ i18n.t()('vehicle_form.model') }}</label>
+      <input hlmInput id="model" type="text" autocomplete="off" [formField]="vehicleForm.model" />
+      @if (vehicleForm.model().touched() && vehicleForm.model().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ vehicleForm.model().errors()[0]?.message }}
+        </p>
+      }
 
-  <label hlmLabel for="year">{{ i18n.t()('vehicle_form.year') }}</label>
-  <input hlmInput id="year" type="number" inputmode="numeric" [formField]="vehicleForm.year" />
-  @if (vehicleForm.year().touched() && vehicleForm.year().invalid()) {
-    <p class="text-destructive text-sm" role="alert">
-      {{ vehicleForm.year().errors()[0]?.message }}
-    </p>
-  }
+      <label hlmLabel for="year">{{ i18n.t()('vehicle_form.year') }}</label>
+      <input hlmInput id="year" type="number" inputmode="numeric" [formField]="vehicleForm.year" />
+      @if (vehicleForm.year().touched() && vehicleForm.year().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ vehicleForm.year().errors()[0]?.message }}
+        </p>
+      }
 
-  @if (error()) {
-    <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
-  }
+      @if (error()) {
+        <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
+      }
+    </div>
+  </div>
 
-  <button hlmBtn type="submit" [disabled]="submitting()">
+  <button hlmBtn type="submit" [disabled]="submitting()" class="w-full">
     {{ submitting() ? i18n.t()('vehicle_form.saving') : i18n.t()('vehicle_form.save') }}
   </button>
-  <button hlmBtn variant="outline" type="button" (click)="cancelled.emit()">{{ i18n.t()('vehicle_form.cancel') }}</button>
+  <button hlmBtn variant="outline" type="button" class="w-full" (click)="cancelled.emit()">{{ i18n.t()('vehicle_form.cancel') }}</button>
 </form>

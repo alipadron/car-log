@@ -1,6 +1,7 @@
 import { Component, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { FormField, form, pattern, required, submit, validate } from '@angular/forms/signals';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
@@ -21,7 +22,7 @@ interface VehicleFormModel {
  */
 @Component({
   selector: 'app-vehicle-form',
-  imports: [FormField, HlmButtonImports, HlmInput, HlmLabel],
+  imports: [FormField, HlmButtonImports, HlmCardImports, HlmInput, HlmLabel],
   templateUrl: './vehicle-form.html',
 })
 export class VehicleForm {
