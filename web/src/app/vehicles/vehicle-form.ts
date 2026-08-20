@@ -5,7 +5,7 @@ import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
-import { I18n } from '../i18n/translations';
+import { I18n, msg } from '../i18n/translations';
 import { PageHeading } from '../shared/page-heading';
 import { Vehicle, VehiclePayload, VehiclesApi, VehicleType } from './vehicles-api';
 
@@ -46,11 +46,11 @@ export class VehicleForm {
   });
 
   protected readonly vehicleForm = form(this.model, (path) => {
-    required(path.name, { message: 'Enter a name.' });
-    required(path.make, { message: 'Enter the make.' });
-    required(path.model, { message: 'Enter the model.' });
-    required(path.year, { message: 'Enter the year.' });
-    pattern(path.year, /^\d{4}$/, { message: 'Enter a valid year.' });
+    required(path.name, { message: msg('vehicle_form.validate.name') });
+    required(path.make, { message: msg('vehicle_form.validate.make') });
+    required(path.model, { message: msg('vehicle_form.validate.model') });
+    required(path.year, { message: msg('vehicle_form.validate.year') });
+    pattern(path.year, /^\d{4}$/, { message: msg('vehicle_form.validate.year.pattern') });
     // Mirrors the server's year range (VehicleController::vehicleRules).
     validate(path.year, (ctx) => {
       const raw = ctx.value();
@@ -60,7 +60,7 @@ export class VehicleForm {
       const year = Number(raw);
       return Number.isInteger(year) && year >= 1886 && year <= 2100
         ? null
-        : { kind: 'yearRange', message: 'Enter a year between 1886 and 2100.' };
+        : { kind: 'yearRange', message: msg('vehicle_form.validate.year.range') };
     });
   });
 

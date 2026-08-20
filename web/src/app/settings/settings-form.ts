@@ -5,7 +5,7 @@ import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
-import { I18n } from '../i18n/translations';
+import { I18n, msg } from '../i18n/translations';
 import { PageHeading } from '../shared/page-heading';
 import { DistanceUnit, Language } from './settings-api';
 import { Settings } from './settings';
@@ -41,14 +41,14 @@ export class SettingsForm {
   protected readonly settingsForm = form(this.model, (path) => {
     required(path.language);
     required(path.distance_unit);
-    required(path.currency, { message: 'Enter a currency code.' });
-    pattern(path.currency, /^[A-Z]{3}$/, { message: 'Enter a 3-letter currency code (e.g. USD, EUR).' });
+    required(path.currency, { message: msg('settings.currency.validate.required') });
+    pattern(path.currency, /^[A-Z]{3}$/, { message: msg('settings.currency.validate.pattern') });
     validate(path.currency, (ctx) => {
       const raw = ctx.value();
       if (raw === '') {
         return null;
       }
-      return raw.length <= 10 ? null : { kind: 'currencyLength', message: 'Currency code is too long.' };
+      return raw.length <= 10 ? null : { kind: 'currencyLength', message: msg('settings.currency.validate.tooLong') };
     });
   });
 

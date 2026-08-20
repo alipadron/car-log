@@ -48,7 +48,9 @@ const translations = {
     'settings.distance_unit.mi': 'Miles (mi)',
     'settings.currency': 'Currency',
     'settings.currency.placeholder': 'USD',
-    'settings.currency.validate': 'Enter a 3-letter currency code (e.g. USD, EUR).',
+    'settings.currency.validate.required': 'Enter a currency code.',
+    'settings.currency.validate.pattern': 'Enter a 3-letter currency code (e.g. USD, EUR).',
+    'settings.currency.validate.tooLong': 'Currency code is too long.',
     'settings.save': 'Save settings',
     'settings.saving': 'Saving…',
     'settings.saved': 'Settings saved.',
@@ -105,7 +107,9 @@ const translations = {
     'settings.distance_unit.mi': 'Millas (mi)',
     'settings.currency': 'Moneda',
     'settings.currency.placeholder': 'USD',
-    'settings.currency.validate': 'Ingresa un código de moneda de 3 letras (ej. USD, EUR).',
+    'settings.currency.validate.required': 'Ingresa un código de moneda.',
+    'settings.currency.validate.pattern': 'Ingresa un código de moneda de 3 letras (ej. USD, EUR).',
+    'settings.currency.validate.tooLong': 'El código de moneda es demasiado largo.',
     'settings.save': 'Guardar ajustes',
     'settings.saving': 'Guardando…',
     'settings.saved': 'Ajustes guardados.',
@@ -123,10 +127,19 @@ const translations = {
 type TranslationKey = keyof typeof translations['en'];
 
 /**
+ * Typed wrapper that enforces translation-key validity at compile time.
+ * Returns a plain string so it can be passed to the form API.
+ */
+export function msg(key: TranslationKey): string {
+  return key;
+}
+
+/**
  * Provides translated strings based on the current language setting.
  * Uses signal-based reactivity so the UI updates when language changes.
  */
 @Service()
+
 export class I18n {
   private readonly settings = inject(Settings);
 
@@ -134,8 +147,8 @@ export class I18n {
     const lang = this.settings.language();
     const dict = translations[lang] ?? translations['en'];
 
-    return (key: TranslationKey, params?: Record<string, string>): string => {
-      let value: string = dict[key] ?? translations['en'][key] ?? key;
+    return (key: string, params?: Record<string, string>): string => {
+      let value: string = dict[key as TranslationKey] ?? translations['en'][key as TranslationKey] ?? key;
       if (params) {
         for (const [k, v] of Object.entries(params)) {
           value = value.replace(`{${k}}`, v);

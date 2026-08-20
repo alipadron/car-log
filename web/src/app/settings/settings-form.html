@@ -27,7 +27,7 @@
       />
       @if (settingsForm.currency().touched() && settingsForm.currency().invalid()) {
         <p class="text-destructive text-sm" role="alert">
-          {{ settingsForm.currency().errors()[0]?.message }}
+          {{ i18n.t()(settingsForm.currency().errors()[0]!.message!) }}
         </p>
       }
 

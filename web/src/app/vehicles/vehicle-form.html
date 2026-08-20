@@ -14,7 +14,7 @@
       />
       @if (vehicleForm.name().touched() && vehicleForm.name().invalid()) {
         <p class="text-destructive text-sm" role="alert">
-          {{ vehicleForm.name().errors()[0]?.message }}
+          {{ i18n.t()(vehicleForm.name().errors()[0]!.message!) }}
         </p>
       }
 
@@ -28,7 +28,7 @@
       <input hlmInput id="make" type="text" autocomplete="off" [formField]="vehicleForm.make" />
       @if (vehicleForm.make().touched() && vehicleForm.make().invalid()) {
         <p class="text-destructive text-sm" role="alert">
-          {{ vehicleForm.make().errors()[0]?.message }}
+          {{ i18n.t()(vehicleForm.make().errors()[0]!.message!) }}
         </p>
       }
 
@@ -36,7 +36,7 @@
       <input hlmInput id="model" type="text" autocomplete="off" [formField]="vehicleForm.model" />
       @if (vehicleForm.model().touched() && vehicleForm.model().invalid()) {
         <p class="text-destructive text-sm" role="alert">
-          {{ vehicleForm.model().errors()[0]?.message }}
+          {{ i18n.t()(vehicleForm.model().errors()[0]!.message!) }}
         </p>
       }
 
@@ -44,7 +44,7 @@
       <input hlmInput id="year" type="number" inputmode="numeric" [formField]="vehicleForm.year" />
       @if (vehicleForm.year().touched() && vehicleForm.year().invalid()) {
         <p class="text-destructive text-sm" role="alert">
-          {{ vehicleForm.year().errors()[0]?.message }}
+          {{ i18n.t()(vehicleForm.year().errors()[0]!.message!) }}
         </p>
       }
 
