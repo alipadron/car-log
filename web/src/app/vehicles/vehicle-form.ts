@@ -4,6 +4,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
+import { I18n } from '../i18n/translations';
 import { Vehicle, VehiclePayload, VehiclesApi, VehicleType } from './vehicles-api';
 
 interface VehicleFormModel {
@@ -25,6 +26,7 @@ interface VehicleFormModel {
 })
 export class VehicleForm {
   private readonly api = inject(VehiclesApi);
+  protected readonly i18n = inject(I18n);
 
   readonly vehicle = input<Vehicle | null>(null);
   readonly saved = output<Vehicle>();

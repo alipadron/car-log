@@ -5,7 +5,7 @@
     variant="ghost"
     size="icon"
     type="button"
-    [attr.aria-label]="theme.dark() ? 'Switch to light mode' : 'Switch to dark mode'"
+    [attr.aria-label]="theme.dark() ? i18n.t()('theme.light') : i18n.t()('theme.dark')"
     (click)="theme.toggle()"
   >
     @if (theme.dark()) {
@@ -51,8 +51,34 @@
 </header>
 
 @if (auth.token()) {
+  <nav class="mx-auto flex w-full max-w-md gap-2 px-4 pt-4">
+    <button
+      hlmBtn
+      variant="ghost"
+      type="button"
+      class="flex-1"
+      [class.bg-accent]="activeView() === 'vehicles'"
+      (click)="activeView.set('vehicles')"
+    >
+      {{ i18n.t()('nav.vehicles') }}
+    </button>
+    <button
+      hlmBtn
+      variant="ghost"
+      type="button"
+      class="flex-1"
+      [class.bg-accent]="activeView() === 'settings'"
+      (click)="activeView.set('settings')"
+    >
+      {{ i18n.t()('nav.settings') }}
+    </button>
+  </nav>
   <main class="mx-auto w-full max-w-md px-4 py-8">
-    <app-vehicles />
+    @if (activeView() === 'vehicles') {
+      <app-vehicles />
+    } @else {
+      <app-settings-form />
+    }
   </main>
 } @else {
   <app-unlock />

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
+import { I18n } from '../i18n/translations';
 import { Vehicle, VehiclesApi } from './vehicles-api';
 import { VehicleForm } from './vehicle-form';
 
@@ -17,6 +18,7 @@ import { VehicleForm } from './vehicle-form';
 })
 export class Vehicles {
   private readonly api = inject(VehiclesApi);
+  protected readonly i18n = inject(I18n);
 
   protected readonly vehicles = signal<Vehicle[]>([]);
   protected readonly loading = signal(true);
@@ -34,7 +36,7 @@ export class Vehicles {
     try {
       this.vehicles.set(await this.api.list());
     } catch {
-      this.error.set('Could not load your vehicles. Check your connection and reopen the app.');
+      this.error.set(this.i18n.t()('vehicles.load.error'));
     } finally {
       this.loading.set(false);
     }
@@ -72,7 +74,7 @@ export class Vehicles {
       this.vehicles.update((vehicles) => vehicles.filter(({ id }) => id !== vehicle.id));
       this.confirmingDeleteId.set(null);
     } catch {
-      this.error.set('Could not delete the vehicle. Try again.');
+      this.error.set(this.i18n.t()('vehicles.delete.error'));
     } finally {
       this.deleting.set(false);
     }

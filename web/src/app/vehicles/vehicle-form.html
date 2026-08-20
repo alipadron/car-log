@@ -1,7 +1,7 @@
-<h2 class="mb-4 text-xl font-bold">{{ vehicle() ? 'Edit vehicle' : 'Add vehicle' }}</h2>
+<h2 class="mb-4 text-xl font-bold">{{ vehicle() ? i18n.t()('vehicle_form.title.edit') : i18n.t()('vehicle_form.title.add') }}</h2>
 
 <form class="flex flex-col gap-3" (submit)="save(); $event.preventDefault()">
-  <label hlmLabel for="name">Name</label>
+  <label hlmLabel for="name">{{ i18n.t()('vehicle_form.name') }}</label>
   <input
     hlmInput
     id="name"
@@ -16,13 +16,13 @@
     </p>
   }
 
-  <label hlmLabel for="type">Type</label>
+  <label hlmLabel for="type">{{ i18n.t()('vehicle_form.type') }}</label>
   <select hlmInput id="type" [formField]="vehicleForm.type">
-    <option value="car">Car</option>
-    <option value="bike">Bike</option>
+    <option value="car">{{ i18n.t()('vehicle_form.type.car') }}</option>
+    <option value="bike">{{ i18n.t()('vehicle_form.type.bike') }}</option>
   </select>
 
-  <label hlmLabel for="make">Make</label>
+  <label hlmLabel for="make">{{ i18n.t()('vehicle_form.make') }}</label>
   <input hlmInput id="make" type="text" autocomplete="off" [formField]="vehicleForm.make" />
   @if (vehicleForm.make().touched() && vehicleForm.make().invalid()) {
     <p class="text-destructive text-sm" role="alert">
@@ -30,7 +30,7 @@
     </p>
   }
 
-  <label hlmLabel for="model">Model</label>
+  <label hlmLabel for="model">{{ i18n.t()('vehicle_form.model') }}</label>
   <input hlmInput id="model" type="text" autocomplete="off" [formField]="vehicleForm.model" />
   @if (vehicleForm.model().touched() && vehicleForm.model().invalid()) {
     <p class="text-destructive text-sm" role="alert">
@@ -38,7 +38,7 @@
     </p>
   }
 
-  <label hlmLabel for="year">Year</label>
+  <label hlmLabel for="year">{{ i18n.t()('vehicle_form.year') }}</label>
   <input hlmInput id="year" type="number" inputmode="numeric" [formField]="vehicleForm.year" />
   @if (vehicleForm.year().touched() && vehicleForm.year().invalid()) {
     <p class="text-destructive text-sm" role="alert">
@@ -51,7 +51,7 @@
   }
 
   <button hlmBtn type="submit" [disabled]="submitting()">
-    {{ submitting() ? 'Saving…' : 'Save vehicle' }}
+    {{ submitting() ? i18n.t()('vehicle_form.saving') : i18n.t()('vehicle_form.save') }}
   </button>
-  <button hlmBtn variant="outline" type="button" (click)="cancelled.emit()">Cancel</button>
+  <button hlmBtn variant="outline" type="button" (click)="cancelled.emit()">{{ i18n.t()('vehicle_form.cancel') }}</button>
 </form>

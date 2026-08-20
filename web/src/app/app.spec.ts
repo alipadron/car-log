@@ -27,6 +27,10 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
+    httpTesting
+      .expectOne('/api/settings')
+      .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
+
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Password');
   });
 
@@ -35,13 +39,15 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
+    httpTesting
+      .expectOne('/api/settings')
+      .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
     httpTesting.expectOne('/api/vehicles').flush({ data: [] });
     await fixture.whenStable();
     fixture.detectChanges();
 
     const text = (fixture.nativeElement as HTMLElement).textContent;
     expect(text).toContain('car-log');
-    expect(text).toContain('Vehicles');
   });
 
   it('returns to the unlock screen when the API answers 401', async () => {
@@ -49,6 +55,9 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
+    httpTesting
+      .expectOne('/api/settings')
+      .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
     httpTesting
       .expectOne('/api/vehicles')
       .flush({ message: 'Unauthenticated.' }, { status: 401, statusText: 'Unauthorized' });

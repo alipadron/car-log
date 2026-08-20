@@ -1,0 +1,49 @@
+<form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
+  <div hlmCard>
+    <div hlmCardHeader>
+      <h2 hlmCardTitle>{{ i18n.t()('settings.title') }}</h2>
+      <p hlmCardDescription>{{ i18n.t()('settings.description') }}</p>
+    </div>
+
+    <div hlmCardContent class="flex flex-col gap-4">
+      <label hlmLabel for="language">{{ i18n.t()('settings.language') }}</label>
+      <select hlmInput id="language" [formField]="settingsForm.language">
+        <option value="en">{{ i18n.t()('settings.language.en') }}</option>
+        <option value="es">{{ i18n.t()('settings.language.es') }}</option>
+      </select>
+
+      <label hlmLabel for="distance_unit">{{ i18n.t()('settings.distance_unit') }}</label>
+      <select hlmInput id="distance_unit" [formField]="settingsForm.distance_unit">
+        <option value="km">{{ i18n.t()('settings.distance_unit.km') }}</option>
+        <option value="mi">{{ i18n.t()('settings.distance_unit.mi') }}</option>
+      </select>
+
+      <label hlmLabel for="currency">{{ i18n.t()('settings.currency') }}</label>
+      <input
+        hlmInput
+        id="currency"
+        type="text"
+        autocomplete="off"
+        placeholder="USD"
+        [formField]="settingsForm.currency"
+      />
+      @if (settingsForm.currency().touched() && settingsForm.currency().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ settingsForm.currency().errors()[0]?.message }}
+        </p>
+      }
+
+      @if (error()) {
+        <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
+      }
+
+      @if (saved()) {
+        <p class="text-sm text-green-600" role="status">{{ i18n.t()('settings.saved') }}</p>
+      }
+    </div>
+  </div>
+
+  <button hlmBtn type="submit" [disabled]="submitting()" class="w-full">
+    {{ submitting() ? i18n.t()('settings.saving') : i18n.t()('settings.save') }}
+  </button>
+</form>

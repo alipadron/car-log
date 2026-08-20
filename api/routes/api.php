@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\DB;
@@ -20,4 +21,7 @@ Route::middleware('auth.token')->group(function () {
 
     Route::apiResource('vehicles', VehicleController::class)
         ->only(['index', 'store', 'update', 'destroy']);
+
+    Route::get('/settings', [SettingsController::class, 'show']);
+    Route::put('/settings', [SettingsController::class, 'update']);
 });

@@ -5,7 +5,7 @@
     (cancelled)="onCancelled()"
   />
 } @else {
-  <h2 class="mb-4 text-xl font-bold">Vehicles</h2>
+  <h2 class="mb-4 text-xl font-bold">{{ i18n.t()('vehicles.title') }}</h2>
 
   @if (error()) {
     <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>
@@ -15,7 +15,7 @@
     <p class="text-muted-foreground">Loading…</p>
   } @else if (vehicles().length === 0 && !error()) {
     <p class="text-muted-foreground mb-4">
-      No vehicles yet. Add your first one to start logging work.
+      {{ i18n.t()('vehicles.empty') }}
     </p>
   } @else {
     <ul class="flex flex-col gap-3">
@@ -30,7 +30,7 @@
 
           <div hlmCardContent>
             @if (confirmingDeleteId() === vehicle.id) {
-              <p class="text-sm">Delete {{ vehicle.name }}? This cannot be undone.</p>
+              <p class="text-sm">{{ i18n.t()('vehicles.delete.confirm', { name: vehicle.name }) }}</p>
               <div class="mt-2 flex gap-2">
                 <button
                   hlmBtn
@@ -40,7 +40,7 @@
                   [disabled]="deleting()"
                   (click)="deleteVehicle(vehicle)"
                 >
-                  {{ deleting() ? 'Deleting…' : 'Delete it' }}
+                  {{ deleting() ? i18n.t()('vehicles.delete.deleting') : i18n.t()('vehicles.delete.it') }}
                 </button>
                 <button
                   hlmBtn
@@ -49,7 +49,7 @@
                   class="flex-1"
                   (click)="confirmingDeleteId.set(null)"
                 >
-                  Keep it
+                  {{ i18n.t()('vehicles.delete.keep') }}
                 </button>
               </div>
             } @else {
@@ -61,7 +61,7 @@
                   class="flex-1"
                   (click)="editVehicle(vehicle)"
                 >
-                  Edit
+                  {{ i18n.t()('vehicles.edit') }}
                 </button>
                 <button
                   hlmBtn
@@ -70,7 +70,7 @@
                   class="flex-1"
                   (click)="confirmingDeleteId.set(vehicle.id)"
                 >
-                  Delete
+                  {{ i18n.t()('vehicles.delete') }}
                 </button>
               </div>
             }
@@ -81,6 +81,6 @@
   }
 
   @if (!loading() && !error()) {
-    <button hlmBtn type="button" class="mt-4 w-full" (click)="addVehicle()">Add vehicle</button>
+    <button hlmBtn type="button" class="mt-4 w-full" (click)="addVehicle()">{{ i18n.t()('vehicles.add') }}</button>
   }
 }

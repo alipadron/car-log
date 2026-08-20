@@ -1,0 +1,147 @@
+import { computed, inject } from '@angular/core';
+import { Service } from '@angular/core';
+
+import { Settings } from '../settings/settings';
+
+const translations = {
+  en: {
+    'app.title': 'car-log',
+    'nav.vehicles': 'Vehicles',
+    'nav.settings': 'Settings',
+    'vehicles.title': 'Vehicles',
+    'vehicles.empty': 'No vehicles yet. Add your first one to start logging work.',
+    'vehicles.add': 'Add vehicle',
+    'vehicles.edit': 'Edit',
+    'vehicles.delete': 'Delete',
+    'vehicles.delete.confirm': 'Delete {name}? This cannot be undone.',
+    'vehicles.delete.it': 'Delete it',
+    'vehicles.delete.keep': 'Keep it',
+    'vehicles.delete.deleting': 'Deleting…',
+    'vehicles.delete.error': 'Could not delete the vehicle. Try again.',
+    'vehicles.load.error': 'Could not load your vehicles. Check your connection and reopen the app.',
+    'vehicle_form.title.add': 'Add vehicle',
+    'vehicle_form.title.edit': 'Edit vehicle',
+    'vehicle_form.name': 'Name',
+    'vehicle_form.type': 'Type',
+    'vehicle_form.type.car': 'Car',
+    'vehicle_form.type.bike': 'Bike',
+    'vehicle_form.make': 'Make',
+    'vehicle_form.model': 'Model',
+    'vehicle_form.year': 'Year',
+    'vehicle_form.save': 'Save vehicle',
+    'vehicle_form.saving': 'Saving…',
+    'vehicle_form.cancel': 'Cancel',
+    'vehicle_form.error': 'Could not save the vehicle. Check your connection and try again.',
+    'vehicle_form.validate.name': 'Enter a name.',
+    'vehicle_form.validate.make': 'Enter the make.',
+    'vehicle_form.validate.model': 'Enter the model.',
+    'vehicle_form.validate.year': 'Enter the year.',
+    'vehicle_form.validate.year.pattern': 'Enter a valid year.',
+    'vehicle_form.validate.year.range': 'Enter a year between 1886 and 2100.',
+    'settings.title': 'Settings',
+    'settings.description': 'Configure language, distance unit, and currency.',
+    'settings.language': 'Language',
+    'settings.language.en': 'English',
+    'settings.language.es': 'Español',
+    'settings.distance_unit': 'Distance unit',
+    'settings.distance_unit.km': 'Kilometers (km)',
+    'settings.distance_unit.mi': 'Miles (mi)',
+    'settings.currency': 'Currency',
+    'settings.currency.placeholder': 'USD',
+    'settings.currency.validate': 'Enter a 3-letter currency code (e.g. USD, EUR).',
+    'settings.save': 'Save settings',
+    'settings.saving': 'Saving…',
+    'settings.saved': 'Settings saved.',
+    'settings.error': 'Could not save settings. Check your connection and try again.',
+    'settings.load.error': 'Could not load settings.',
+    'unlock.title': 'Unlock',
+    'unlock.password': 'Password',
+    'unlock.submit': 'Unlock',
+    'unlock.error': 'Incorrect password. Try again.',
+    'theme.light': 'Switch to light mode',
+    'theme.dark': 'Switch to dark mode',
+  },
+  es: {
+    'app.title': 'car-log',
+    'nav.vehicles': 'Vehículos',
+    'nav.settings': 'Ajustes',
+    'vehicles.title': 'Vehículos',
+    'vehicles.empty': 'Aún no hay vehículos. Agrega el primero para empezar a registrar.',
+    'vehicles.add': 'Agregar vehículo',
+    'vehicles.edit': 'Editar',
+    'vehicles.delete': 'Eliminar',
+    'vehicles.delete.confirm': '¿Eliminar {name}? Esta acción no se puede deshacer.',
+    'vehicles.delete.it': 'Eliminar',
+    'vehicles.delete.keep': 'Conservar',
+    'vehicles.delete.deleting': 'Eliminando…',
+    'vehicles.delete.error': 'No se pudo eliminar el vehículo. Inténtalo de nuevo.',
+    'vehicles.load.error': 'No se pudieron cargar los vehículos. Verifica tu conexión y vuelve a abrir la app.',
+    'vehicle_form.title.add': 'Agregar vehículo',
+    'vehicle_form.title.edit': 'Editar vehículo',
+    'vehicle_form.name': 'Nombre',
+    'vehicle_form.type': 'Tipo',
+    'vehicle_form.type.car': 'Carro',
+    'vehicle_form.type.bike': 'Moto',
+    'vehicle_form.make': 'Marca',
+    'vehicle_form.model': 'Modelo',
+    'vehicle_form.year': 'Año',
+    'vehicle_form.save': 'Guardar vehículo',
+    'vehicle_form.saving': 'Guardando…',
+    'vehicle_form.cancel': 'Cancelar',
+    'vehicle_form.error': 'No se pudo guardar el vehículo. Verifica tu conexión e intenta de nuevo.',
+    'vehicle_form.validate.name': 'Ingresa un nombre.',
+    'vehicle_form.validate.make': 'Ingresa la marca.',
+    'vehicle_form.validate.model': 'Ingresa el modelo.',
+    'vehicle_form.validate.year': 'Ingresa el año.',
+    'vehicle_form.validate.year.pattern': 'Ingresa un año válido.',
+    'vehicle_form.validate.year.range': 'Ingresa un año entre 1886 y 2100.',
+    'settings.title': 'Ajustes',
+    'settings.description': 'Configura idioma, unidad de distancia y moneda.',
+    'settings.language': 'Idioma',
+    'settings.language.en': 'English',
+    'settings.language.es': 'Español',
+    'settings.distance_unit': 'Unidad de distancia',
+    'settings.distance_unit.km': 'Kilómetros (km)',
+    'settings.distance_unit.mi': 'Millas (mi)',
+    'settings.currency': 'Moneda',
+    'settings.currency.placeholder': 'USD',
+    'settings.currency.validate': 'Ingresa un código de moneda de 3 letras (ej. USD, EUR).',
+    'settings.save': 'Guardar ajustes',
+    'settings.saving': 'Guardando…',
+    'settings.saved': 'Ajustes guardados.',
+    'settings.error': 'No se pudieron guardar los ajustes. Verifica tu conexión e intenta de nuevo.',
+    'settings.load.error': 'No se pudieron cargar los ajustes.',
+    'unlock.title': 'Desbloquear',
+    'unlock.password': 'Contraseña',
+    'unlock.submit': 'Desbloquear',
+    'unlock.error': 'Contraseña incorrecta. Inténtalo de nuevo.',
+    'theme.light': 'Cambiar a modo claro',
+    'theme.dark': 'Cambiar a modo oscuro',
+  },
+} as const;
+
+type TranslationKey = keyof typeof translations['en'];
+
+/**
+ * Provides translated strings based on the current language setting.
+ * Uses signal-based reactivity so the UI updates when language changes.
+ */
+@Service()
+export class I18n {
+  private readonly settings = inject(Settings);
+
+  readonly t = computed(() => {
+    const lang = this.settings.language();
+    const dict = translations[lang] ?? translations['en'];
+
+    return (key: TranslationKey, params?: Record<string, string>): string => {
+      let value: string = dict[key] ?? translations['en'][key] ?? key;
+      if (params) {
+        for (const [k, v] of Object.entries(params)) {
+          value = value.replace(`{${k}}`, v);
+        }
+      }
+      return value;
+    };
+  });
+}

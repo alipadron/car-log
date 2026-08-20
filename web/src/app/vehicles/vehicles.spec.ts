@@ -47,6 +47,12 @@ describe('Vehicles', () => {
     const fixture = TestBed.createComponent(Vehicles);
     fixture.detectChanges();
 
+    // Flush the settings request triggered by I18n → Settings → SettingsApi
+    const settingsReq = httpTesting.expectOne('/api/settings');
+    settingsReq.flush({
+      data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' },
+    });
+
     httpTesting.expectOne('/api/vehicles').flush({ data: vehicles });
     await settle(fixture);
 
@@ -92,6 +98,11 @@ describe('Vehicles', () => {
   it('shows an error when the list cannot be loaded', async () => {
     const fixture = TestBed.createComponent(Vehicles);
     fixture.detectChanges();
+
+    // Flush the settings request triggered by I18n → Settings → SettingsApi
+    httpTesting
+      .expectOne('/api/settings')
+      .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
 
     httpTesting.expectOne('/api/vehicles').error(new ProgressEvent('error'));
     await settle(fixture);
