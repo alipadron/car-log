@@ -1,0 +1,56 @@
+<app-page-heading class="mb-2" [title]="vehicle().name" />
+
+<p class="text-muted-foreground mb-4 text-sm">
+  {{ vehicle().make }} {{ vehicle().model }} · {{ vehicle().year }} · {{ vehicle().type }}
+</p>
+
+<div class="flex gap-2 mb-4">
+  <button
+    hlmBtn
+    variant="ghost"
+    type="button"
+    class="flex-1"
+    [class.bg-accent]="activeTab() === 'odometer'"
+    (click)="switchTab('odometer')"
+  >
+    {{ i18n.t()('vehicle_detail.odometer') }}
+  </button>
+  <button
+    hlmBtn
+    variant="ghost"
+    type="button"
+    class="flex-1"
+    [class.bg-accent]="activeTab() === 'repairs'"
+    (click)="switchTab('repairs')"
+  >
+    {{ i18n.t()('vehicle_detail.repairs') }}
+  </button>
+</div>
+
+@if (showOdometerForm()) {
+  <app-odometer-entry-form
+    [vehicleId]="vehicle().id"
+    (saved)="showOdometerForm.set(false)"
+    (cancelled)="showOdometerForm.set(false)"
+  />
+} @else if (showRepairForm()) {
+  <app-repair-form
+    [vehicleId]="vehicle().id"
+    (saved)="showRepairForm.set(false)"
+    (cancelled)="showRepairForm.set(false)"
+  />
+} @else if (activeTab() === 'odometer') {
+  <app-odometer-entry-list
+    [vehicleId]="vehicle().id"
+    (add)="showOdometerForm.set(true)"
+  />
+} @else {
+  <app-repair-list
+    [vehicleId]="vehicle().id"
+    (add)="showRepairForm.set(true)"
+  />
+}
+
+<button hlmBtn variant="outline" type="button" class="mt-4 w-full" (click)="goBack()">
+  {{ i18n.t()('vehicle_detail.back') }}
+</button>

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
@@ -20,6 +20,8 @@ import { VehicleForm } from './vehicle-form';
 export class Vehicles {
   private readonly api = inject(VehiclesApi);
   protected readonly i18n = inject(I18n);
+
+  readonly viewVehicle = output<Vehicle>();
 
   protected readonly vehicles = signal<Vehicle[]>([]);
   protected readonly loading = signal(true);
@@ -64,6 +66,10 @@ export class Vehicles {
 
   protected onCancelled(): void {
     this.editing.set(undefined);
+  }
+
+  protected onViewVehicle(vehicle: Vehicle): void {
+    this.viewVehicle.emit(vehicle);
   }
 
   protected async deleteVehicle(vehicle: Vehicle): Promise<void> {

@@ -1,0 +1,28 @@
+@if (error()) {
+  <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="text-muted-foreground">Loading…</p>
+} @else if (entries().length === 0 && !error()) {
+  <p class="text-muted-foreground mb-4">{{ i18n.t()('odometer.empty') }}</p>
+} @else {
+  <ul class="flex flex-col gap-3">
+    @for (entry of entries(); track entry.id) {
+      <li hlmCard>
+        <div hlmCardContent>
+          <div class="flex items-center justify-between">
+            <span class="font-medium">{{ entry.value }} km</span>
+            <span class="text-muted-foreground text-sm">{{ formatDate(entry.recorded_at) }}</span>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+}
+
+@if (!loading() && !error()) {
+  <button hlmBtn type="button" class="mt-4 w-full" (click)="add.emit()">
+    {{ i18n.t()('odometer.add') }}
+  </button>
+}

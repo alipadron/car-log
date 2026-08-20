@@ -5,6 +5,7 @@ namespace App;
 use Database\Factories\VehicleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Vehicle extends Model
 {
@@ -35,5 +36,15 @@ class Vehicle extends Model
         return [
             'year' => 'integer',
         ];
+    }
+
+    public function odometerEntries(): HasMany
+    {
+        return $this->hasMany(OdometerEntry::class);
+    }
+
+    public function repairs(): HasMany
+    {
+        return $this->hasMany(Repair::class);
     }
 }

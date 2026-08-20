@@ -74,8 +74,13 @@
     </button>
   </nav>
   <main class="mx-auto w-full max-w-md px-4 py-8">
-    @if (activeView() === 'vehicles') {
-      <app-vehicles />
+    @if (selectedVehicle()) {
+      <app-vehicle-detail
+        [vehicle]="selectedVehicle()!"
+        (back)="selectedVehicle.set(null)"
+      />
+    } @else if (activeView() === 'vehicles') {
+      <app-vehicles (viewVehicle)="selectedVehicle.set($event)" />
     } @else {
       <app-settings-form />
     }

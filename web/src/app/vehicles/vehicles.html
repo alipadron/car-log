@@ -53,7 +53,15 @@
                 </button>
               </div>
             } @else {
-              <div class="flex gap-2">
+              <button
+                hlmBtn
+                type="button"
+                class="w-full"
+                (click)="onViewVehicle(vehicle)"
+              >
+                {{ vehicle.name }}
+              </button>
+              <div class="mt-2 flex gap-2">
                 <button
                   hlmBtn
                   variant="outline"

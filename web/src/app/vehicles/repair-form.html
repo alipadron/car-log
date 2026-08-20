@@ -1,0 +1,61 @@
+<form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
+  <app-page-heading [title]="i18n.t()('repairs.add')" />
+
+  <div hlmCard>
+    <div hlmCardContent class="flex flex-col gap-4">
+      <label hlmLabel for="title">{{ i18n.t()('repairs.title_label') }}</label>
+      <input
+        hlmInput
+        id="title"
+        type="text"
+        autocomplete="off"
+        autofocus
+        [formField]="repairForm.title"
+      />
+      @if (repairForm.title().touched() && repairForm.title().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(repairForm.title().errors()[0]!.message!) }}
+        </p>
+      }
+
+      <label hlmLabel for="notes">{{ i18n.t()('repairs.notes') }}</label>
+      <input hlmInput id="notes" type="text" autocomplete="off" [formField]="repairForm.notes" />
+
+      <label hlmLabel for="cost">{{ i18n.t()('repairs.cost') }}</label>
+      <input hlmInput id="cost" type="number" inputmode="decimal" step="0.01" [formField]="repairForm.cost" />
+
+      <label hlmLabel for="performed_at">{{ i18n.t()('repairs.performed_at') }}</label>
+      <input hlmInput id="performed_at" type="date" [formField]="repairForm.performed_at" />
+      @if (repairForm.performed_at().touched() && repairForm.performed_at().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(repairForm.performed_at().errors()[0]!.message!) }}
+        </p>
+      }
+
+      <label hlmLabel for="odometer_value">{{ i18n.t()('repairs.odometer_value') }}</label>
+      <input
+        hlmInput
+        id="odometer_value"
+        type="number"
+        inputmode="numeric"
+        [formField]="repairForm.odometer_value"
+      />
+      @if (repairForm.odometer_value().touched() && repairForm.odometer_value().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(repairForm.odometer_value().errors()[0]!.message!) }}
+        </p>
+      }
+
+      @if (error()) {
+        <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
+      }
+    </div>
+  </div>
+
+  <button hlmBtn type="submit" [disabled]="submitting()" class="w-full">
+    {{ submitting() ? i18n.t()('repairs.saving') : i18n.t()('repairs.save') }}
+  </button>
+  <button hlmBtn variant="outline" type="button" class="w-full" (click)="cancelled.emit()">
+    {{ i18n.t()('repairs.cancel') }}
+  </button>
+</form>

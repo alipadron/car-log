@@ -1,0 +1,42 @@
+<form class="flex flex-col gap-4" (submit)="save(); $event.preventDefault()">
+  <app-page-heading [title]="i18n.t()('odometer.add')" />
+
+  <div hlmCard>
+    <div hlmCardContent class="flex flex-col gap-4">
+      <label hlmLabel for="value">{{ i18n.t()('odometer.value') }}</label>
+      <input
+        hlmInput
+        id="value"
+        type="number"
+        inputmode="numeric"
+        autocomplete="off"
+        autofocus
+        [formField]="entryForm.value"
+      />
+      @if (entryForm.value().touched() && entryForm.value().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(entryForm.value().errors()[0]!.message!) }}
+        </p>
+      }
+
+      <label hlmLabel for="recorded_at">{{ i18n.t()('odometer.recorded_at') }}</label>
+      <input hlmInput id="recorded_at" type="date" [formField]="entryForm.recorded_at" />
+      @if (entryForm.recorded_at().touched() && entryForm.recorded_at().invalid()) {
+        <p class="text-destructive text-sm" role="alert">
+          {{ i18n.t()(entryForm.recorded_at().errors()[0]!.message!) }}
+        </p>
+      }
+
+      @if (error()) {
+        <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
+      }
+    </div>
+  </div>
+
+  <button hlmBtn type="submit" [disabled]="submitting()" class="w-full">
+    {{ submitting() ? i18n.t()('odometer.saving') : i18n.t()('odometer.save') }}
+  </button>
+  <button hlmBtn variant="outline" type="button" class="w-full" (click)="cancelled.emit()">
+    {{ i18n.t()('odometer.cancel') }}
+  </button>
+</form>

@@ -1,0 +1,36 @@
+@if (error()) {
+  <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>
+}
+
+@if (loading()) {
+  <p class="text-muted-foreground">Loading…</p>
+} @else if (repairs().length === 0 && !error()) {
+  <p class="text-muted-foreground mb-4">{{ i18n.t()('repairs.empty') }}</p>
+} @else {
+  <ul class="flex flex-col gap-3">
+    @for (repair of repairs(); track repair.id) {
+      <li hlmCard>
+        <div hlmCardHeader>
+          <h3 hlmCardTitle class="text-base">{{ repair.title }}</h3>
+          <p hlmCardDescription>
+            {{ repair.odometer_value }} km · {{ formatDate(repair.performed_at) }}
+            @if (repair.cost) {
+              · {{ repair.cost }}
+            }
+          </p>
+        </div>
+        @if (repair.notes) {
+          <div hlmCardContent>
+            <p class="text-muted-foreground text-sm">{{ repair.notes }}</p>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+}
+
+@if (!loading() && !error()) {
+  <button hlmBtn type="button" class="mt-4 w-full" (click)="add.emit()">
+    {{ i18n.t()('repairs.add') }}
+  </button>
+}
