@@ -1,4 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmCardImports } from '@spartan-ng/helm/card';
 
 import { Vehicle, VehiclesApi } from './vehicles-api';
 import { VehicleForm } from './vehicle-form';
@@ -10,7 +12,7 @@ import { VehicleForm } from './vehicle-form';
  */
 @Component({
   selector: 'app-vehicles',
-  imports: [VehicleForm],
+  imports: [VehicleForm, HlmButtonImports, HlmCardImports],
   templateUrl: './vehicles.html',
 })
 export class Vehicles {

@@ -11,3 +11,15 @@ if (typeof localStorage === 'undefined' && typeof jsdom !== 'undefined') {
     configurable: true,
   });
 }
+
+// jsdom does not implement matchMedia; the Theme service uses it for the
+// system dark-mode preference. Stub it (never matches) for tests.
+if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
+  window.matchMedia = (query: string): MediaQueryList =>
+    ({
+      matches: false,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }) as unknown as MediaQueryList;
+}

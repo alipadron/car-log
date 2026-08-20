@@ -1,81 +1,81 @@
 <h2 class="mb-4 text-xl font-bold">{{ vehicle() ? 'Edit vehicle' : 'Add vehicle' }}</h2>
 
 <form class="flex flex-col gap-3" (submit)="save(); $event.preventDefault()">
-  <label class="font-semibold" for="name">Name</label>
+  <label hlmLabel for="name">Name</label>
   <input
+    hlmInput
     id="name"
     type="text"
     autocomplete="off"
     autofocus
-    class="min-h-11 rounded-lg border border-border bg-surface px-3 text-base text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+    class="min-h-11"
     [formField]="vehicleForm.name"
   />
   @if (vehicleForm.name().touched() && vehicleForm.name().invalid()) {
-    <p class="text-sm text-danger" role="alert">{{ vehicleForm.name().errors()[0]?.message }}</p>
+    <p class="text-destructive text-sm" role="alert">
+      {{ vehicleForm.name().errors()[0]?.message }}
+    </p>
   }
 
-  <label class="font-semibold" for="type">Type</label>
-  <select
-    id="type"
-    class="min-h-11 rounded-lg border border-border bg-surface px-3 text-base text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
-    [formField]="vehicleForm.type"
-  >
+  <label hlmLabel for="type">Type</label>
+  <select hlmInput id="type" class="min-h-11" [formField]="vehicleForm.type">
     <option value="car">Car</option>
     <option value="bike">Bike</option>
   </select>
 
-  <label class="font-semibold" for="make">Make</label>
+  <label hlmLabel for="make">Make</label>
   <input
+    hlmInput
     id="make"
     type="text"
     autocomplete="off"
-    class="min-h-11 rounded-lg border border-border bg-surface px-3 text-base text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+    class="min-h-11"
     [formField]="vehicleForm.make"
   />
   @if (vehicleForm.make().touched() && vehicleForm.make().invalid()) {
-    <p class="text-sm text-danger" role="alert">{{ vehicleForm.make().errors()[0]?.message }}</p>
+    <p class="text-destructive text-sm" role="alert">
+      {{ vehicleForm.make().errors()[0]?.message }}
+    </p>
   }
 
-  <label class="font-semibold" for="model">Model</label>
+  <label hlmLabel for="model">Model</label>
   <input
+    hlmInput
     id="model"
     type="text"
     autocomplete="off"
-    class="min-h-11 rounded-lg border border-border bg-surface px-3 text-base text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+    class="min-h-11"
     [formField]="vehicleForm.model"
   />
   @if (vehicleForm.model().touched() && vehicleForm.model().invalid()) {
-    <p class="text-sm text-danger" role="alert">{{ vehicleForm.model().errors()[0]?.message }}</p>
+    <p class="text-destructive text-sm" role="alert">
+      {{ vehicleForm.model().errors()[0]?.message }}
+    </p>
   }
 
-  <label class="font-semibold" for="year">Year</label>
+  <label hlmLabel for="year">Year</label>
   <input
+    hlmInput
     id="year"
     type="number"
     inputmode="numeric"
-    class="min-h-11 rounded-lg border border-border bg-surface px-3 text-base text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/30"
+    class="min-h-11"
     [formField]="vehicleForm.year"
   />
   @if (vehicleForm.year().touched() && vehicleForm.year().invalid()) {
-    <p class="text-sm text-danger" role="alert">{{ vehicleForm.year().errors()[0]?.message }}</p>
+    <p class="text-destructive text-sm" role="alert">
+      {{ vehicleForm.year().errors()[0]?.message }}
+    </p>
   }
 
   @if (error()) {
-    <p class="text-sm text-danger" role="alert">{{ error() }}</p>
+    <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
   }
 
-  <button
-    type="submit"
-    class="min-h-11 rounded-lg bg-accent px-4 text-base font-semibold text-accent-ink disabled:opacity-60"
-    [disabled]="submitting()"
-  >
+  <button hlmBtn type="submit" class="min-h-11" [disabled]="submitting()">
     {{ submitting() ? 'Saving…' : 'Save vehicle' }}
   </button>
-  <button
-    type="button"
-    class="min-h-11 rounded-lg border border-border px-4 text-base font-semibold text-ink"
-    (click)="cancelled.emit()"
-  >
+  <button hlmBtn variant="outline" type="button" class="min-h-11" (click)="cancelled.emit()">
     Cancel
   </button>
 </form>

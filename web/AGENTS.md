@@ -24,11 +24,22 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 ## Styling
 
-- Tailwind CSS v4 utilities only; design tokens live in `src/styles.css` (`@theme`). Conventions and token values: `../docs/design.md`; decisions: `../docs/adr/0002-design-foundations.md`.
+- The design foundation is spartan/ui: helm components live in `libs/ui/`
+  (copied source, owned by this repo); theme variables live in
+  `src/styles.css`. Conventions and token values: `../docs/design.md`;
+  decisions: `../docs/adr/0003-spartan-ui.md`.
+- Add components with `ng g @spartan-ng/cli:ui <name>` (config:
+  `components.json`). Use the spartan skill and the `@spartan-ng/mcp` server
+  (repo-root `.mcp.json`) to confirm component APIs.
 - No per-component style files — `angular.json` sets `@schematics/angular:component` to `style: "none"`. Do not add `styleUrl` to components.
-- Use semantic token utilities (`text-danger`, `bg-surface`), not raw palette colors, in templates.
-- Flag, don't decide: when a utility cluster repeats or a UI piece has a name (button, input, card, badge), propose it as an extraction candidate with reasoning — the owner decides whether to extract. Some duplication is acceptable. Approved primitives live under `src/app/ui/`.
-- Any visual primitive not covered by `docs/design.md` (new state color, layout pattern, component family) must be approved by the owner before implementation.
+- Use spartan's semantic token utilities (`text-destructive`, `bg-card`,
+  `text-muted-foreground`), not raw palette colors, in templates. Prefer
+  helm components over hand-assembled utility clusters.
+- Interactive elements keep 44px touch targets: add `min-h-11` where helm
+  defaults are smaller.
+- Any visual primitive spartan doesn't cover (new state color, layout
+  pattern, component family) must be approved by the owner before
+  implementation.
 
 ## Accessibility Requirements
 

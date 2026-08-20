@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted (pending owner confirmation).
+Superseded by [ADR 0003](0003-spartan-ui.md) (spartan/ui adopted as the
+design foundation; the token layer described here was removed).
 
 ## Context
 

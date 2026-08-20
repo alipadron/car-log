@@ -1,6 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required, submit } from '@angular/forms/signals';
+import { HlmButtonImports } from '@spartan-ng/helm/button';
+import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmLabel } from '@spartan-ng/helm/label';
 import { firstValueFrom } from 'rxjs';
 
 import { Auth } from '../auth/auth';
@@ -15,7 +18,7 @@ interface TokenResponse {
 
 @Component({
   selector: 'app-unlock',
-  imports: [FormField],
+  imports: [FormField, HlmButtonImports, HlmInput, HlmLabel],
   templateUrl: './unlock.html',
 })
 export class Unlock {

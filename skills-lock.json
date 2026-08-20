@@ -133,6 +133,12 @@
       "skillPath": "skills/in-progress/setup-ts-deep-modules/SKILL.md",
       "computedHash": "19dabd17a305fd99857b3eaad12b044fb951bdf58152d515630d1585f80d24fa"
     },
+    "spartan": {
+      "source": "spartan-ng/spartan",
+      "sourceType": "github",
+      "skillPath": "skills/spartan/SKILL.md",
+      "computedHash": "126d1eba31bef1c33c37ce3675bc20d0e74a5c2f42625d7837d5c8fae25234e5"
+    },
     "tdd": {
       "source": "mattpocock/skills",
       "sourceType": "github",
