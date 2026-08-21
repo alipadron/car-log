@@ -5,7 +5,7 @@ import { HlmCardImports } from '@spartan-ng/helm/card';
 import { I18n } from '../i18n/translations';
 import { PageHeading } from '../shared/page-heading';
 import { Settings } from '../settings/settings';
-import { HomeApi, VehicleHome, DueItem, RecentActivity } from './home-api';
+import { HomeApi, VehicleHome, DueItem, DueStatus, DUE_STATUS_ORDER, RecentActivity } from './home-api';
 
 @Component({
   selector: 'app-home',
@@ -44,7 +44,7 @@ export class Home implements OnInit {
     return this.i18n.t()(`home.status.${status}`);
   }
 
-  protected statusClass(status: string): string {
+  protected statusClass(status: DueStatus): string {
     switch (status) {
       case 'overdue': return 'text-destructive font-semibold';
       case 'due_soon': return 'text-yellow-600 dark:text-yellow-400';
@@ -56,7 +56,7 @@ export class Home implements OnInit {
   protected formatDueRemaining(item: DueItem): string {
     const parts: string[] = [];
     if (item.km_remaining !== null) {
-      parts.push(`${item.km_remaining.toLocaleString()} km`);
+      parts.push(this.settings.formatDistance(item.km_remaining));
     }
     if (item.months_remaining !== null) {
       parts.push(`${item.months_remaining} mo`);

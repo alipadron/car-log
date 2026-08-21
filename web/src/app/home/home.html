@@ -68,7 +68,7 @@
   }
 }
 
-@if (!loading() && !error()) {
+@if (!loading() && !error() && vehicles().length > 0) {
   <button hlmBtn variant="outline" type="button" class="w-full" (click)="load()">
     {{ i18n.t()('home.refresh') }}
   </button>

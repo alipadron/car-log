@@ -195,8 +195,11 @@ export class VehicleDetailApi {
       ),
     );
     return response.data;
-  }  async deleteMaintenanceSchedule(vehicleId: number, scheduleId: number): Promise<void> {
-    await firstValueFrom(this.http.delete(`/api/vehicles/${vehicleId}/maintenance-schedules/${scheduleId}`),
+  }
+
+  async deleteMaintenanceSchedule(vehicleId: number, scheduleId: number): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(`/api/vehicles/${vehicleId}/maintenance-schedules/${scheduleId}`),
     );
   }
 

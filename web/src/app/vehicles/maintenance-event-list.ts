@@ -3,6 +3,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
 import { I18n } from '../i18n/translations';
+import { Settings } from '../settings/settings';
 import { VehicleDetailApi, MaintenanceEvent } from './vehicle-detail-api';
 
 @Component({
@@ -13,6 +14,7 @@ import { VehicleDetailApi, MaintenanceEvent } from './vehicle-detail-api';
 export class MaintenanceEventList implements OnInit {
   private readonly api = inject(VehicleDetailApi);
   protected readonly i18n = inject(I18n);
+  protected readonly settings = inject(Settings);
 
   readonly vehicleId = input.required<number>();
   readonly add = output<void>();
@@ -33,6 +35,10 @@ export class MaintenanceEventList implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected formatOdometer(value: number): string {
+    return this.settings.formatDistance(value);
   }
 
   protected formatDate(iso: string): string {

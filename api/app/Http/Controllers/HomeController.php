@@ -66,11 +66,15 @@ class HomeController extends Controller
      */
     private function dueItems(Vehicle $vehicle): array
     {
+        $currentOdometer = $this->currentOdometer($vehicle);
+
+        // Can't compute due status without an odometer baseline
+        if ($currentOdometer === null) {
+            return [];
+        }
+
         $schedules = $vehicle->maintenanceSchedules()->get();
         $now = Carbon::now();
-
-        // Get current odometer for this vehicle
-        $currentOdometer = $this->currentOdometer($vehicle) ?? 0;
 
         $items = [];
 
@@ -105,9 +109,10 @@ class HomeController extends Controller
             ];
         }
 
-        // Sort: overdue first, then due_soon, then never_done, then ok
-        $order = ['overdue' => 0, 'never_done' => 1, 'due_soon' => 2, 'ok' => 3];
-        usort($items, fn (array $a, array $b) => ($order[$a['status']] ?? 9) <=> ($order[$b['status']] ?? 9));
+        // Sort by display order defined on DueStatus
+        usort($items, fn (array $a, array $b) =>
+            (DueStatus::DISPLAY_ORDER[$a['status']] ?? 9) <=> (DueStatus::DISPLAY_ORDER[$b['status']] ?? 9)
+        );
 
         return $items;
     }

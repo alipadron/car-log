@@ -2,10 +2,23 @@ import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+export type DueStatus = 'overdue' | 'due_soon' | 'ok' | 'never_done';
+
+/**
+ * Canonical display order for due statuses (must match backend sort in HomeController).
+ * Lower number = displayed first.
+ */
+export const DUE_STATUS_ORDER: Record<DueStatus, number> = {
+  overdue: 0,
+  never_done: 1,
+  due_soon: 2,
+  ok: 3,
+};
+
 export interface DueItem {
   schedule_id: number;
   name: string;
-  status: 'overdue' | 'due_soon' | 'ok' | 'never_done';
+  status: DueStatus;
   km_remaining: number | null;
   months_remaining: number | null;
 }

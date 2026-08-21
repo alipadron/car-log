@@ -14,6 +14,14 @@ final class DueStatus
     /** @var list<string> */
     public const STATUSES = ['overdue', 'due_soon', 'ok', 'never_done'];
 
+    /** @var array<string, int> Display order: lower = shown first. */
+    public const DISPLAY_ORDER = [
+        'overdue' => 0,
+        'never_done' => 1,
+        'due_soon' => 2,
+        'ok' => 3,
+    ];
+
     private function __construct(
         public readonly string $status,
         public readonly ?int $kmRemaining,

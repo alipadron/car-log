@@ -15,7 +15,7 @@
             <div>
               <span class="font-medium">{{ event.notes ?? i18n.t()('events.one_off') }}</span>
               <p class="text-muted-foreground text-sm">
-                {{ event.odometer_value }} km · {{ formatDate(event.performed_at) }}
+                {{ formatOdometer(event.odometer_value) }} · {{ formatDate(event.performed_at) }}
               </p>
             </div>
             @if (event.cost) {
