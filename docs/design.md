@@ -33,7 +33,10 @@ Usage in templates: `bg-card`, `text-muted-foreground`, `text-destructive`,
 
 Domain state colors (due/overdue/pending-sync) are deliberately **not**
 defined yet; they arrive with the home screen ticket as custom variables per
-spartan's theming docs. Until then `text-destructive` covers errors.
+spartan's theming docs. Until then `text-destructive` covers errors, and the
+offline indicator is rendered as a spartan `hlm-alert variant="destructive"`
+banner in the app shell (no new color token). The pending-sync color arrives
+with the offline-capture ticket (#10).
 
 ## Dark mode
 

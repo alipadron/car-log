@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Web</title>
+  <title>car-log</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
   <!-- Apply the stored theme before first paint to avoid a light flash.
        Must stay in sync with THEME_STORAGE_KEY in src/app/theme.ts. -->
   <script>
@@ -19,8 +22,10 @@
       }
     } catch {}
   </script>
+  <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
   <app-root></app-root>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 </html>

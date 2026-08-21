@@ -147,6 +147,8 @@ const translations = {
     'schedules.validate.interval': 'Enter at least one interval (km or months).',
     'theme.light': 'Switch to light mode',
     'theme.dark': 'Switch to dark mode',
+    'offline.banner.title': "You're offline",
+    'offline.banner.description': "The server can't be reached. Changes may not appear until you're back online.",
   },
   es: {
     'app.title': 'car-log',
@@ -291,6 +293,8 @@ const translations = {
     'schedules.validate.interval': 'Ingresa al menos un intervalo (km o meses).',
     'theme.light': 'Cambiar a modo claro',
     'theme.dark': 'Cambiar a modo oscuro',
+    'offline.banner.title': 'Estás sin conexión',
+    'offline.banner.description': "No se puede conectar con el servidor. Los cambios pueden no aparecer hasta que vuelvas a estar en línea.",
   },
 } as const;
 

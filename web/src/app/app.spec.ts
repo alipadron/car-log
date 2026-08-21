@@ -5,6 +5,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { App } from './app';
 import { Auth } from './auth/auth';
 import { authInterceptor } from './auth/auth-interceptor';
+import { connectivityInterceptor } from './offline/connectivity-interceptor';
 
 describe('App', () => {
   let httpTesting: HttpTestingController;
@@ -14,7 +15,7 @@ describe('App', () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
-        provideHttpClient(withInterceptors([authInterceptor])),
+        provideHttpClient(withInterceptors([authInterceptor, connectivityInterceptor])),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
@@ -84,5 +85,20 @@ describe('App', () => {
 
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Password');
     expect(TestBed.inject(Auth).token()).toBeNull();
+  });
+
+  it('shows the offline banner when the server is unreachable', async () => {
+    TestBed.inject(Auth).setToken('api-token');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    httpTesting
+      .expectOne('/api/settings')
+      .flush({ data: { id: 1, language: 'en', distance_unit: 'km', currency: 'USD', updated_at: '2026-08-20T00:00:00Z' } });
+    httpTesting.expectOne('/api/home').error(new ProgressEvent('error'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain("You're offline");
   });
 });

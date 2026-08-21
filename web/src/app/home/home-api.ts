@@ -1,6 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+
+import { HomeCache } from '../offline/home-cache';
 
 export type DueStatus = 'overdue' | 'due_soon' | 'ok' | 'never_done';
 
@@ -49,14 +51,34 @@ interface HomeResponse {
 }
 
 /**
- * Talks to the home API endpoint.
+ * Talks to the home API endpoint. On success the payload is cached on-device;
+ * if the server cannot be reached (a connection-level failure with no HTTP
+ * response), the last-known snapshot is served so the home screen still renders
+ * (stale) data. A reachable-but-erroring server (HTTP error status) surfaces
+ * rather than being masked by cached data.
  */
 @Service()
 export class HomeApi {
   private readonly http = inject(HttpClient);
+  private readonly cache = inject(HomeCache);
 
   async get(): Promise<VehicleHome[]> {
-    const response = await firstValueFrom(this.http.get<HomeResponse>('/api/home'));
-    return response.data;
+    try {
+      const response = await firstValueFrom(this.http.get<HomeResponse>('/api/home'));
+      await this.cache.save(response.data);
+      return response.data;
+    } catch (error) {
+      if (this.isConnectionFailure(error)) {
+        const cached = await this.cache.get();
+        if (cached !== null) {
+          return cached;
+        }
+      }
+      throw error;
+    }
+  }
+
+  private isConnectionFailure(error: unknown): boolean {
+    return !(error instanceof HttpErrorResponse && error.status);
   }
 }
