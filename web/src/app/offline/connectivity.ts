@@ -1,7 +1,12 @@
 import { computed, Service, signal } from '@angular/core';
 
-const deviceOnline = (): boolean =>
-  typeof navigator === 'undefined' ? true : navigator.onLine;
+const deviceOnline = (): boolean => {
+  if (typeof navigator === 'undefined') return true;
+  // `navigator.onLine` is undefined in some environments (e.g. jsdom); an
+  // unknown value means "not reported offline", so assume online — actual
+  // connection failures are still caught by the server-reachability signal.
+  return navigator.onLine !== false;
+};
 
 /**
  * Tracks whether the app should be treated as offline for display purposes.

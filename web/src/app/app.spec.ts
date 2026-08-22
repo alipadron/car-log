@@ -6,6 +6,8 @@ import { App } from './app';
 import { Auth } from './auth/auth';
 import { authInterceptor } from './auth/auth-interceptor';
 import { connectivityInterceptor } from './offline/connectivity-interceptor';
+import { Outbox } from './offline/outbox';
+import { FakeOutbox } from './offline/outbox.fake';
 
 describe('App', () => {
   let httpTesting: HttpTestingController;
@@ -19,6 +21,9 @@ describe('App', () => {
         provideHttpClientTesting(),
       ],
     }).compileComponents();
+    // The connectivity interceptor triggers the outbox replay (via Sync) on
+    // every response; give it an in-memory store since jsdom has no IndexedDB.
+    TestBed.overrideProvider(Outbox, { useValue: new FakeOutbox() });
     httpTesting = TestBed.inject(HttpTestingController);
   });
 

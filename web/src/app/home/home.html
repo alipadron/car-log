@@ -1,5 +1,16 @@
 <app-page-heading class="mb-4" [title]="i18n.t()('home.title')" />
 
+@if (pending() > 0) {
+  <div hlmCard class="mb-4" role="status" aria-live="polite">
+    <div hlmCardContent class="flex items-center justify-between">
+      <span class="text-sm">{{ i18n.t()('pending.home', { count: '' + pending() }) }}</span>
+      <span class="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs">
+        {{ i18n.t()('pending.badge') }}
+      </span>
+    </div>
+  </div>
+}
+
 @if (error()) {
   <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>
 }

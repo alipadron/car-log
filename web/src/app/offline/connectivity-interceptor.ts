@@ -3,10 +3,12 @@ import { inject } from '@angular/core';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 
 import { Connectivity } from './connectivity';
+import { Sync } from './sync';
 
 /**
  * Reports whether the server is reachable to the {@link Connectivity} service,
- * so the app shell can show an offline indicator.
+ * so the app shell can show an offline indicator, and kicks the outbox replay
+ * after any successful response so queued entries sync when the server returns.
  *
  * Any HTTP response — regardless of status — means the server answered and is
  * reachable. Only a connection-level failure with no HTTP status (network
@@ -14,11 +16,13 @@ import { Connectivity } from './connectivity';
  */
 export const connectivityInterceptor: HttpInterceptorFn = (req, next) => {
   const connectivity = inject(Connectivity);
+  const sync = inject(Sync);
 
   return next(req).pipe(
     tap((event: HttpEvent<unknown>) => {
       if (event.type === HttpEventType.Response) {
         connectivity.reportServerSuccess();
+        void sync.attemptFlush();
       }
     }),
     catchError((error: unknown) => {

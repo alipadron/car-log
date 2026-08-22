@@ -4,6 +4,8 @@ import { TestBed } from '@angular/core/testing';
 
 import { Connectivity } from './connectivity';
 import { connectivityInterceptor } from './connectivity-interceptor';
+import { Outbox } from './outbox';
+import { FakeOutbox } from './outbox.fake';
 
 describe('connectivityInterceptor', () => {
   let http: HttpClient;
@@ -17,6 +19,9 @@ describe('connectivityInterceptor', () => {
         provideHttpClientTesting(),
       ],
     });
+    // The interceptor now triggers the outbox replay (via Sync) on every
+    // response; give it an in-memory store since jsdom has no IndexedDB.
+    TestBed.overrideProvider(Outbox, { useValue: new FakeOutbox() });
     http = TestBed.inject(HttpClient);
     testing = TestBed.inject(HttpTestingController);
     connectivity = TestBed.inject(Connectivity);

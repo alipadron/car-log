@@ -1,10 +1,38 @@
+@if (pending().length > 0) {
+  <ul class="mb-4 flex flex-col gap-3">
+    @for (repair of pendingRepairs(); track repair.id) {
+      <li hlmCard>
+        <div hlmCardHeader>
+          <div class="flex items-center justify-between gap-2">
+            <h3 hlmCardTitle class="text-base">{{ repair.title }}</h3>
+            <span class="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs">
+              {{ i18n.t()('pending.badge') }}
+            </span>
+          </div>
+          <p hlmCardDescription>
+            {{ repair.odometer_value }} km · {{ formatDate(repair.performed_at) }}
+            @if (repair.cost) {
+              · {{ repair.cost }}
+            }
+          </p>
+        </div>
+        @if (repair.notes) {
+          <div hlmCardContent>
+            <p class="text-muted-foreground text-sm">{{ repair.notes }}</p>
+          </div>
+        }
+      </li>
+    }
+  </ul>
+}
+
 @if (error()) {
   <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>
 }
 
 @if (loading()) {
   <p class="text-muted-foreground">Loading…</p>
-} @else if (repairs().length === 0 && !error()) {
+} @else if (repairs().length === 0 && !error() && pending().length === 0) {
   <p class="text-muted-foreground mb-4">{{ i18n.t()('repairs.empty') }}</p>
 } @else {
   <ul class="flex flex-col gap-3">

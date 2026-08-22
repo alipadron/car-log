@@ -149,6 +149,8 @@ const translations = {
     'theme.dark': 'Switch to dark mode',
     'offline.banner.title': "You're offline",
     'offline.banner.description': "The server can't be reached. Changes may not appear until you're back online.",
+    'pending.badge': 'Pending sync',
+    'pending.home': '{count} entries pending sync',
   },
   es: {
     'app.title': 'car-log',
@@ -295,6 +297,8 @@ const translations = {
     'theme.dark': 'Cambiar a modo oscuro',
     'offline.banner.title': 'Estás sin conexión',
     'offline.banner.description': "No se puede conectar con el servidor. Los cambios pueden no aparecer hasta que vuelvas a estar en línea.",
+    'pending.badge': 'Pendiente de sincronizar',
+    'pending.home': '{count} entradas pendientes de sincronizar',
   },
 } as const;
 

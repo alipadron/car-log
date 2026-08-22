@@ -3,6 +3,7 @@ import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
 import { I18n } from '../i18n/translations';
+import { Sync } from '../offline/sync';
 import { PageHeading } from '../shared/page-heading';
 import { Settings } from '../settings/settings';
 import { HomeApi, VehicleHome, DueItem, DueStatus, DUE_STATUS_ORDER, RecentActivity } from './home-api';
@@ -14,8 +15,10 @@ import { HomeApi, VehicleHome, DueItem, DueStatus, DUE_STATUS_ORDER, RecentActiv
 })
 export class Home implements OnInit {
   private readonly api = inject(HomeApi);
+  private readonly sync = inject(Sync);
   protected readonly i18n = inject(I18n);
   protected readonly settings = inject(Settings);
+  protected readonly pending = this.sync.pending;
 
   protected readonly vehicles = signal<VehicleHome[]>([]);
   protected readonly loading = signal(true);

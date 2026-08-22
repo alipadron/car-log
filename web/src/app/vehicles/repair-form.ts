@@ -6,8 +6,8 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n, msg } from '../i18n/translations';
+import { Capture } from '../offline/capture';
 import { PageHeading } from '../shared/page-heading';
-import { VehicleDetailApi } from './vehicle-detail-api';
 
 interface RepairFormModel {
   title: string;
@@ -23,7 +23,7 @@ interface RepairFormModel {
   templateUrl: './repair-form.html',
 })
 export class RepairForm {
-  private readonly api = inject(VehicleDetailApi);
+  private readonly capture = inject(Capture);
   protected readonly i18n = inject(I18n);
 
   readonly vehicleId = input.required<number>();
@@ -54,8 +54,7 @@ export class RepairForm {
 
       try {
         const value = this.model();
-        await this.api.createRepair(this.vehicleId(), {
-          uuid: crypto.randomUUID(),
+        await this.capture.createRepair(this.vehicleId(), {
           title: value.title,
           notes: value.notes || null,
           cost: value.cost ? Number(value.cost) : null,

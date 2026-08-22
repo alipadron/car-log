@@ -3,6 +3,8 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HomeCache } from '../offline/home-cache';
+import { Outbox } from '../offline/outbox';
+import { FakeOutbox } from '../offline/outbox.fake';
 import { Home } from './home';
 import { VehicleHome } from './home-api';
 
@@ -31,6 +33,9 @@ describe('Home', () => {
       imports: [Home],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
+    // Home renders the pending-sync banner via Sync, which reads the outbox;
+    // give it an in-memory store since jsdom has no IndexedDB.
+    TestBed.overrideProvider(Outbox, { useValue: new FakeOutbox() });
     testing = TestBed.inject(HttpTestingController);
     cache = TestBed.inject(HomeCache);
   });

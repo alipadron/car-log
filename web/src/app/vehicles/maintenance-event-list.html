@@ -1,10 +1,37 @@
+@if (pending().length > 0) {
+  <ul class="mb-4 flex flex-col gap-3">
+    @for (event of pendingEvents(); track event.id) {
+      <li hlmCard>
+        <div hlmCardContent>
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="font-medium">{{ event.notes ?? i18n.t()('events.one_off') }}</span>
+              <p class="text-muted-foreground text-sm">
+                {{ formatOdometer(event.odometer_value) }} · {{ formatDate(event.performed_at) }}
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              @if (event.cost) {
+                <span class="text-sm">{{ event.cost }}</span>
+              }
+              <span class="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs">
+                {{ i18n.t()('pending.badge') }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+}
+
 @if (error()) {
   <p class="text-destructive mb-4 text-sm" role="alert">{{ error() }}</p>
 }
 
 @if (loading()) {
   <p class="text-muted-foreground">Loading…</p>
-} @else if (events().length === 0 && !error()) {
+} @else if (events().length === 0 && !error() && pending().length === 0) {
   <p class="text-muted-foreground mb-4">{{ i18n.t()('events.empty') }}</p>
 } @else {
   <ul class="flex flex-col gap-3">

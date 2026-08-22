@@ -6,6 +6,7 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n, msg } from '../i18n/translations';
+import { Capture } from '../offline/capture';
 import { PageHeading } from '../shared/page-heading';
 import { MaintenanceSchedule, VehicleDetailApi } from './vehicle-detail-api';
 
@@ -23,6 +24,7 @@ interface EventFormModel {
   templateUrl: './maintenance-event-form.html',
 })
 export class MaintenanceEventForm {
+  private readonly capture = inject(Capture);
   private readonly api = inject(VehicleDetailApi);
   protected readonly i18n = inject(I18n);
 
@@ -54,8 +56,7 @@ export class MaintenanceEventForm {
 
       try {
         const value = this.model();
-        await this.api.createMaintenanceEvent(this.vehicleId(), {
-          uuid: crypto.randomUUID(),
+        await this.capture.createMaintenanceEvent(this.vehicleId(), {
           schedule_id: value.schedule_id ? Number(value.schedule_id) : null,
           notes: value.notes || null,
           cost: value.cost ? Number(value.cost) : null,

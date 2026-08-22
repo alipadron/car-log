@@ -6,8 +6,8 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n, msg } from '../i18n/translations';
+import { Capture } from '../offline/capture';
 import { PageHeading } from '../shared/page-heading';
-import { VehicleDetailApi } from './vehicle-detail-api';
 
 interface OdometerFormModel {
   value: string;
@@ -20,7 +20,7 @@ interface OdometerFormModel {
   templateUrl: './odometer-entry-form.html',
 })
 export class OdometerEntryForm {
-  private readonly api = inject(VehicleDetailApi);
+  private readonly capture = inject(Capture);
   protected readonly i18n = inject(I18n);
 
   readonly vehicleId = input.required<number>();
@@ -47,8 +47,7 @@ export class OdometerEntryForm {
 
       try {
         const value = this.model();
-        await this.api.createOdometerEntry(this.vehicleId(), {
-          uuid: crypto.randomUUID(),
+        await this.capture.createOdometerEntry(this.vehicleId(), {
           value: Number(value.value),
           recorded_at: value.recorded_at,
         });

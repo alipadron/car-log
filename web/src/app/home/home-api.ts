@@ -1,7 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { isConnectionFailure } from '../offline/connection-error';
 import { HomeCache } from '../offline/home-cache';
 
 export type DueStatus = 'overdue' | 'due_soon' | 'ok' | 'never_done';
@@ -68,7 +69,7 @@ export class HomeApi {
       await this.cache.save(response.data);
       return response.data;
     } catch (error) {
-      if (this.isConnectionFailure(error)) {
+      if (isConnectionFailure(error)) {
         const cached = await this.cache.get();
         if (cached !== null) {
           return cached;
@@ -76,9 +77,5 @@ export class HomeApi {
       }
       throw error;
     }
-  }
-
-  private isConnectionFailure(error: unknown): boolean {
-    return !(error instanceof HttpErrorResponse && error.status);
   }
 }
