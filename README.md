@@ -80,12 +80,10 @@ is needed; Docker Desktop's WSL2 backend is transparent.
 
 ### 1. Run the setup wizard
 
-The wizard is a PowerShell 7 script (runs on Windows *and* Linux/macOS):
+The wizard is a PowerShell 7 (`pwsh`) script that runs on Windows *and*
+Linux/macOS:
 
 ```powershell
-# Windows 11 (PowerShell 7 / pwsh, or Windows PowerShell):
-powershell -ExecutionPolicy Bypass -File .\deploy\setup.ps1
-# Linux/macOS:
 pwsh -File deploy/setup.ps1
 ```
 
@@ -112,7 +110,7 @@ port — it is reached only through the tunnel at
 ### 3. Verify
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\deploy\smoke-test.ps1   # builds the image and checks the PWA + API + auth + backup file
+pwsh -File deploy/smoke-test.ps1   # builds the image and checks the PWA + API + auth + backup file
 ```
 
 ### 4. Acceptance pass from a phone (manual, once)

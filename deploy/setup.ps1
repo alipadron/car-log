@@ -2,8 +2,7 @@
 #
 # car-log setup wizard — PowerShell 7 (pwsh), cross-platform.
 #
-# On Windows 11:   powershell -ExecutionPolicy Bypass -File .\deploy\setup.ps1
-# On Linux/macOS:  pwsh -File deploy/setup.ps1
+# On Windows and Linux/macOS:   pwsh -File deploy/setup.ps1
 #
 # Walks a human through the steps that only a human can do: choose the
 # subdomain, create the Cloudflare Tunnel and copy its token, set the app's
@@ -69,8 +68,8 @@ function Write-Env([string]$key, [string]$value) {
   $lines = if (Test-Path $envFile) { @(Get-Content $envFile) } else { @() }
   $out = @($lines | Where-Object { $_ -notmatch "^$([regex]::Escape($key))=" })
   $out += "$key=$value"
-  # UTF-8 without BOM: Windows PowerShell 5.1's `-Encoding utf8` adds a BOM,
-  # which breaks docker compose's .env interpolation — write the bytes by hand.
+  # UTF-8 without BOM — docker compose's .env interpolation chokes on a BOM,
+  # so write the bytes by hand rather than via Out-File.
   $content = ($out -join "`n") + "`n"
   [System.IO.File]::WriteAllText($envFile, $content, (New-Object System.Text.UTF8Encoding($false)))
   $script:writtenEnv += $key

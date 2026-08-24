@@ -40,8 +40,8 @@ Alternatives considered:
 - **Host-side scripts in bash (Git Bash / WSL)** — rejected: the owner runs
   the deployment from the Windows 11 host itself, not from a WSL distribution.
   The wizard and smoke test are **PowerShell 7 scripts** (`setup.ps1`,
-  `smoke-test.ps1`), which run natively on Windows PowerShell and on
-  Linux/macOS via `pwsh`. Docker Desktop's WSL2 backend is transparent — no
+  `smoke-test.ps1`), which run natively on Windows and on Linux/macOS via
+  `pwsh` (PowerShell 7). Docker Desktop's WSL2 backend is transparent — no
   distro is ever touched.
 - **Expose the app on a host port** — rejected: the tunnel is the only entry
   point; binding a host port adds an attack surface for zero benefit.

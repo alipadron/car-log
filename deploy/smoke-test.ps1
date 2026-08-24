@@ -12,10 +12,9 @@
 #   7. The database is one copyable file on the mounted volume (backup copy +
 #      persistence across container recreation).
 #
-# Run from the repo root:  powershell -ExecutionPolicy Bypass -File .\deploy\smoke-test.ps1
+# Run from the repo root:  pwsh -File deploy/smoke-test.ps1
 #
-# Requires docker. PowerShell 7 (pwsh) recommended but the script works on
-# Windows PowerShell 5.1 too.
+# Requires docker and PowerShell 7 (pwsh).
 
 $ErrorActionPreference = 'Stop'
 
