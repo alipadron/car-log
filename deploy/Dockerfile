@@ -42,7 +42,8 @@ RUN chmod +x /usr/local/bin/entrypoint \
                /var/www/html/storage/framework/sessions \
                /var/www/html/storage/framework/views \
                /var/www/html/storage/logs \
-    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+               /var/www/html/data \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/data
 
 WORKDIR /var/www/html
 EXPOSE 80

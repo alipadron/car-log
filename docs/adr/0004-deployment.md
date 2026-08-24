@@ -30,10 +30,19 @@ Alternatives considered:
   `shouldRenderJsonWhen` exception handling. Nginx serves the static build
   and only routes `/api/*` and `/up` to PHP, which keeps the API boundary
   clean.
-- **SQLite in a Docker named volume** — rejected: backups are "copy the
-  file", and a named volume hides the file behind Docker internals. A bind
-  mount of exactly `database/database.sqlite` keeps the file a plain host
-  file (`deploy/data/database.sqlite`) that `cp` handles directly.
+- **SQLite in a Windows NTFS bind mount** — rejected: on Docker Desktop
+  (Windows), SQLite's POSIX file locking is unreliable over a bind mount into
+  NTFS, risking "database is locked" corruption. The database lives on a
+  **Docker named volume** (`carlog-data`), mounted at a dedicated
+  `/var/www/html/data` dir inside the container. A named volume is ext4 in the
+  Docker VM, so locking behaves; backups are `docker compose cp` of the one
+  file. Linux users may opt into a bind mount via `CAR_LOG_DATA_VOLUME=./data`.
+- **Host-side scripts in bash (Git Bash / WSL)** — rejected: the owner runs
+  the deployment from the Windows 11 host itself, not from a WSL distribution.
+  The wizard and smoke test are **PowerShell 7 scripts** (`setup.ps1`,
+  `smoke-test.ps1`), which run natively on Windows PowerShell and on
+  Linux/macOS via `pwsh`. Docker Desktop's WSL2 backend is transparent — no
+  distro is ever touched.
 - **Expose the app on a host port** — rejected: the tunnel is the only entry
   point; binding a host port adds an attack surface for zero benefit.
 - **FrankenPHP or a single-binary server** — rejected: nginx + php-fpm is
@@ -62,16 +71,19 @@ Alternatives considered:
   from the repo root) and `tunnel` (`cloudflare/cloudflared`, running with
   the tunnel token from env, `network_mode: service:app` so its public
   hostname points at `http://localhost:80`). No host port for `app`.
-- **Persistence**: only the file `deploy/data/database.sqlite` is bind-
-  mounted into the container — not the whole `database/` dir, which would
-  hide the image's migrations. The wizard creates an empty file at that
-  path.
-- **Human steps**: `deploy/setup.sh` (wizard skill) walks the owner through
-  choosing the subdomain, creating the Cloudflare Tunnel and copying its
-  token, setting the unlock password, and generating `APP_KEY`, writing
+- **Persistence**: the SQLite file lives on the named volume `carlog-data`,
+  mounted at `/var/www/html/data` — a dedicated dir, never over the whole
+  `database/` dir (which would hide the image's migrations). `DB_DATABASE`
+  points Laravel at `/var/www/html/data/database.sqlite`. Linux users can
+  opt into a bind mount via `CAR_LOG_DATA_VOLUME=./data`.
+- **Human steps**: `deploy/setup.ps1` (wizard, PowerShell 7) walks the owner
+  through choosing the subdomain, creating the Cloudflare Tunnel and copying
+  its token, setting the unlock password, and generating `APP_KEY`, writing
   `deploy/.env`.
-- **Backup**: copying `deploy/data/database.sqlite` (documented in the
-  README).
+- **Backup**: `docker compose cp app:/var/www/html/data/database.sqlite ...`
+  (documented in the README).
+- **OS support**: Windows 11 host via Docker Desktop, Linux/macOS via Docker
+  Engine or Docker Desktop. All host commands are PowerShell-compatible.
 
 ## Consequences
 

@@ -9,6 +9,7 @@ api/.phpunit.result.cache
 web/node_modules
 web/dist
 web/.angular
-deploy/data
 deploy/.env
-deploy/setup.sh
+deploy/data
+deploy/setup.ps1
+deploy/smoke-test.ps1

@@ -73,16 +73,26 @@ One Docker command runs the whole app — API + built PWA — on the home PC,
 reachable at a subdomain of `alipadron.dev` through a Cloudflare Tunnel. See
 `docs/adr/0004-deployment.md` for the architecture.
 
+The deployment is OS-agnostic: the containers run under Docker Desktop
+(Windows 11) or Docker Engine (Linux/macOS), and you drive everything from
+your host shell — PowerShell on Windows, bash on Linux. No WSL distribution
+is needed; Docker Desktop's WSL2 backend is transparent.
+
 ### 1. Run the setup wizard
 
-```sh
-deploy/setup.sh
+The wizard is a PowerShell 7 script (runs on Windows *and* Linux/macOS):
+
+```powershell
+# Windows 11 (PowerShell 7 / pwsh, or Windows PowerShell):
+powershell -ExecutionPolicy Bypass -File .\deploy\setup.ps1
+# Linux/macOS:
+pwsh -File deploy/setup.ps1
 ```
 
 It walks you through the human-only steps (4 stages): choosing the subdomain,
 creating the Cloudflare Tunnel and copying its token, setting the app's unlock
-password, and generating the Laravel `APP_KEY`. It writes `deploy/.env` and
-creates the `deploy/data/database.sqlite` file.
+password, and generating the Laravel `APP_KEY`. It writes `deploy/.env`. On
+Windows, install PowerShell 7 with `winget install Microsoft.PowerShell`.
 
 The tunnel's public hostname must point at `http://localhost:80` — the tunnel
 container shares the app container's network namespace, so localhost reaches
@@ -90,7 +100,7 @@ nginx directly.
 
 ### 2. Bring it up
 
-```sh
+```powershell
 docker compose -f deploy/docker-compose.yml up -d --build
 ```
 
@@ -101,8 +111,8 @@ port — it is reached only through the tunnel at
 
 ### 3. Verify
 
-```sh
-deploy/smoke-test.sh   # builds the image and checks the PWA + API + auth + backup file
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy\smoke-test.ps1   # builds the image and checks the PWA + API + auth + backup file
 ```
 
 ### 4. Acceptance pass from a phone (manual, once)
@@ -124,14 +134,38 @@ v1's acceptance is behavioral and happens on the phone over the internet:
 
 ## Backups
 
-The entire database is one file: `deploy/data/database.sqlite` (SQLite — it
-also holds sessions, cache, and queue tables). Backing up is copying that
-file:
+The entire database is one file: `database.sqlite` (SQLite — it also holds
+sessions, cache, and queue tables). It lives on the Docker named volume
+`carlog-data`, mounted at `/var/www/html/data` in the container. Backing up
+is copying that one file out of the volume:
 
-```sh
-cp deploy/data/database.sqlite ~/car-log-backup-$(date +%F).sqlite
+```powershell
+# PowerShell (Windows or Linux):
+docker compose -f deploy/docker-compose.yml up -d   # ensure the stack is running
+docker compose -f deploy/docker-compose.yml cp app:/var/www/html/data/database.sqlite ./car-log-backup.sqlite
+```
+
+Or, without touching the running stack:
+
+```powershell
+docker run --rm -v carlog-data:/data -v ${PWD}:/backup alpine cp /data/database.sqlite /backup/car-log-backup.sqlite
 ```
 
 Restoring is copying it back while the app is stopped, then `docker compose
--f deploy/docker-compose.yml up -d`. The `APP_KEY` in `deploy/.env` must not
-change — it signs the API tokens stored on your phone.
+-f deploy/docker-compose.yml up -d`:
+
+```powershell
+docker compose -f deploy/docker-compose.yml down
+docker run --rm -v carlog-data:/data -v ${PWD}:/backup alpine sh -c 'cp /backup/car-log-backup.sqlite /data/database.sqlite'
+docker compose -f deploy/docker-compose.yml up -d
+```
+
+The `APP_KEY` in `deploy/.env` must not change — it signs the API tokens
+stored on your phone.
+
+> **Linux only (optional):** if you'd rather the SQLite file be a plain host
+> file you can `cp` directly, set `CAR_LOG_DATA_VOLUME=./data` in `deploy/.env`
+> — the compose file then bind-mounts `deploy/data` instead of the named
+> volume, and the backup is literally `cp deploy/data/database.sqlite ...`.
+> Keep the default on Windows: SQLite's file locking is unreliable over a
+> Docker Desktop NTFS bind mount, so the named volume is the safe choice.
