@@ -1,5 +1,13 @@
 {
   "mcpServers": {
+    "laravel-boost": {
+      "command": "php",
+      "args": ["api/artisan", "boost:mcp"]
+    },
+    "angular-cli": {
+      "command": "node",
+      "args": ["web/node_modules/@angular/cli/bin/ng.js", "mcp"]
+    },
     "spartan-ui": {
       "command": "node",
       "args": ["web/node_modules/@spartan-ng/mcp/src/server.js"]
