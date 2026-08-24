@@ -1,0 +1,14 @@
+.git
+api/.env
+api/.env.backup
+api/vendor
+api/node_modules
+api/storage/logs
+api/database/*.sqlite*
+api/.phpunit.result.cache
+web/node_modules
+web/dist
+web/.angular
+deploy/data
+deploy/.env
+deploy/setup.sh

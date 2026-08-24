@@ -1,0 +1,45 @@
+# car-log on the home PC: app (nginx + php-fpm, one image) + Cloudflare Tunnel.
+#
+# Values in ${...} come from deploy/.env — copy deploy/.env.example or run
+# deploy/setup.sh (the wizard) which creates it.
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: car-log:latest
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:?set APP_KEY in deploy/.env}
+      APP_URL: https://${CAR_LOG_SUBDOMAIN:?set CAR_LOG_SUBDOMAIN in deploy/.env}.alipadron.dev
+      CAR_LOG_UNLOCK_PASSWORD: ${CAR_LOG_UNLOCK_PASSWORD:?set CAR_LOG_UNLOCK_PASSWORD in deploy/.env}
+      DB_CONNECTION: sqlite
+      LOG_CHANNEL: stack
+      LOG_STACK: single
+    volumes:
+      # The whole database is one SQLite file on a host path so backups are
+      # literally `cp` of that file (see README "Backups"). Only the file is
+      # mounted — never the whole database/ dir — so the image's migrations
+      # stay visible and image updates propagate new migrations.
+      - ./data/database.sqlite:/var/www/html/database/database.sqlite
+    healthcheck:
+      # Hit Laravel's /up (HTTP stack alive) AND read the SQLite file on the
+      # mounted volume, so a broken/unwritable database surfaces as unhealthy.
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/up && php -r 'exit((new PDO(\"sqlite:/var/www/html/database/database.sqlite\"))->query(\"select 1\") ? 0 : 1);'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:?set CLOUDFLARE_TUNNEL_TOKEN in deploy/.env}
+    # Share the app's network namespace so the tunnel's public hostname can
+    # point at http://localhost:80 (the Cloudflare dashboard default).
+    network_mode: "service:app"
+    depends_on:
+      - app
