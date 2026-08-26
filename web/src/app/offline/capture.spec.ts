@@ -7,7 +7,12 @@ import { Capture } from './capture';
 import { Outbox } from './outbox';
 import { FakeOutbox } from './outbox.fake';
 import { Sync } from './sync';
-import { OdometerEntryPayload, RepairPayload, VehicleDetailApi } from '../vehicles/vehicle-detail-api';
+import {
+  OdometerEntryPayload,
+  RepairPayload,
+  VehicleDetailApi,
+} from '../vehicles/vehicle-detail-api';
+import { Vehicle, VehiclePayload, VehiclesApi } from '../vehicles/vehicles-api';
 
 class FakeApi {
   calls: Array<{ method: string; vehicleId: number; payload: unknown }> = [];
@@ -51,6 +56,26 @@ class FakeApi {
   }
 }
 
+class FakeVehiclesApi {
+  calls: Array<{ method: string; payload: unknown }> = [];
+  failure: unknown = null;
+
+  async create(payload: VehiclePayload & { uuid: string }): Promise<Vehicle> {
+    this.calls.push({ method: 'create', payload });
+    if (this.failure !== null) throw this.failure;
+    return {
+      id: 1,
+      uuid: payload.uuid,
+      name: payload.name,
+      type: payload.type,
+      make: payload.make,
+      model: payload.model,
+      year: payload.year,
+      created_at: '2026-08-22T00:00:00Z',
+    };
+  }
+}
+
 function connectionFailure(): HttpErrorResponse {
   return new HttpErrorResponse({ status: 0, statusText: 'Unknown Error' });
 }
@@ -69,9 +94,14 @@ function repair(title: string): RepairPayload {
   };
 }
 
+function vehicle(name: string): VehiclePayload {
+  return { name, type: 'car', make: 'Toyota', model: 'Corolla', year: 2015 };
+}
+
 describe('Capture', () => {
   let outbox: FakeOutbox;
   let api: FakeApi;
+  let vehiclesApi: FakeVehiclesApi;
   let connectivity: Connectivity;
   let sync: Sync;
   let capture: Capture;
@@ -79,9 +109,11 @@ describe('Capture', () => {
   beforeEach(() => {
     outbox = new FakeOutbox();
     api = new FakeApi();
+    vehiclesApi = new FakeVehiclesApi();
     TestBed.configureTestingModule({});
     TestBed.overrideProvider(Outbox, { useValue: outbox });
     TestBed.overrideProvider(VehicleDetailApi, { useValue: api });
+    TestBed.overrideProvider(VehiclesApi, { useValue: vehiclesApi });
     connectivity = TestBed.inject(Connectivity);
     sync = TestBed.inject(Sync);
     capture = TestBed.inject(Capture);
@@ -165,5 +197,46 @@ describe('Capture', () => {
 
     expect(api.calls).toHaveLength(1);
     expect(sync.pending()).toBe(0);
+  });
+
+  it('saves a vehicle through the API when the server is reachable', async () => {
+    const result = await capture.createVehicle(vehicle('Daily driver'));
+
+    expect(result.status).toBe('saved');
+    expect((result as { vehicle: Vehicle }).vehicle.name).toBe('Daily driver');
+    expect(vehiclesApi.calls).toHaveLength(1);
+    expect((vehiclesApi.calls[0].payload as { uuid: string }).uuid).toMatch(/^[0-9a-f-]{36}$/);
+    expect(outbox.entries).toEqual([]);
+  });
+
+  it('queues a vehicle with no vehicle_id when the server is unreachable', async () => {
+    connectivity.reportServerFailure();
+
+    const result = await capture.createVehicle(vehicle('Daily driver'));
+
+    expect(result).toEqual({ status: 'queued' });
+    expect(vehiclesApi.calls).toHaveLength(0);
+    expect(outbox.entries).toHaveLength(1);
+    expect(outbox.entries[0]).toMatchObject({ type: 'vehicle', payload: vehicle('Daily driver') });
+    expect(outbox.entries[0].uuid).toMatch(/^[0-9a-f-]{36}$/);
+    expect(outbox.entries[0].vehicle_id).toBeUndefined();
+    expect(sync.pending()).toBe(1);
+  });
+
+  it('queues a vehicle whose create fails to reach the server mid-flight', async () => {
+    vehiclesApi.failure = connectionFailure();
+
+    const result = await capture.createVehicle(vehicle('Daily driver'));
+
+    expect(result).toEqual({ status: 'queued' });
+    expect(outbox.entries).toHaveLength(1);
+  });
+
+  it('does not queue a vehicle when the server answers with an HTTP error', async () => {
+    vehiclesApi.failure = httpError();
+
+    await expect(capture.createVehicle(vehicle('Daily driver'))).rejects.toThrow();
+
+    expect(outbox.entries).toEqual([]);
   });
 });

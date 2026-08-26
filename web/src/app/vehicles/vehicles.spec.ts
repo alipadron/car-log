@@ -2,6 +2,9 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
+import { Sync } from '../offline/sync';
+import { Outbox } from '../offline/outbox';
+import { FakeOutbox } from '../offline/outbox.fake';
 import { Vehicle } from './vehicles-api';
 import { Vehicles } from './vehicles';
 
@@ -21,12 +24,16 @@ function makeVehicle(overrides: Partial<Vehicle> = {}): Vehicle {
 
 describe('Vehicles', () => {
   let httpTesting: HttpTestingController;
+  let outbox: FakeOutbox;
 
   beforeEach(async () => {
+    outbox = new FakeOutbox();
     await TestBed.configureTestingModule({
       imports: [Vehicles],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
+    // Sync mirrors the outbox into signals the list renders; jsdom has no IndexedDB.
+    TestBed.overrideProvider(Outbox, { useValue: outbox });
     httpTesting = TestBed.inject(HttpTestingController);
   });
 
@@ -214,9 +221,55 @@ describe('Vehicles', () => {
     setInput(fixture, 'year', '2015');
     submitForm(fixture);
 
-    httpTesting.expectOne('/api/vehicles').error(new ProgressEvent('error'));
+    httpTesting.expectOne('/api/vehicles').flush(
+      { message: 'Server Error' },
+      { status: 500, statusText: 'Internal Server Error' },
+    );
     await settle(fixture);
 
     expect(element(fixture).textContent).toContain('Could not save the vehicle.');
+  });
+
+  it('shows a queued vehicle as pending while it awaits sync', async () => {
+    const fixture = await renderWith([]);
+
+    await outbox.enqueue({
+      type: 'vehicle',
+      uuid: '11111111-2222-4333-8444-555555555555',
+      payload: { name: 'Offline car', type: 'car', make: 'Honda', model: 'Civic', year: 2020 },
+    });
+    await TestBed.inject(Sync).refreshPending();
+    await settle(fixture);
+
+    const text = element(fixture).textContent;
+    expect(text).toContain('Offline car');
+    expect(text).toContain('Honda Civic · 2020 · car');
+    expect(text).toContain('Pending sync');
+    expect([...element(fixture).querySelectorAll('button')].some((b) => b.textContent?.trim() === 'Edit')).toBe(false);
+  });
+
+  it('reloads the server list when a queued vehicle syncs', async () => {
+    const fixture = await renderWith([]);
+
+    await outbox.enqueue({
+      type: 'vehicle',
+      uuid: '11111111-2222-4333-8444-555555555555',
+      payload: { name: 'Offline car', type: 'car', make: 'Honda', model: 'Civic', year: 2020 },
+    });
+    await TestBed.inject(Sync).refreshPending();
+    await settle(fixture);
+    expect(element(fixture).textContent).toContain('Pending sync');
+
+    // The vehicle syncs: its outbox entry is cleared and the server has it now.
+    await outbox.remove([1]);
+    await TestBed.inject(Sync).refreshPending();
+    await settle(fixture);
+
+    httpTesting.expectOne('/api/vehicles').flush({ data: [makeVehicle({ id: 1, name: 'Offline car', make: 'Honda', model: 'Civic', year: 2020 })] });
+    await settle(fixture);
+
+    const text = element(fixture).textContent;
+    expect(text).toContain('Offline car');
+    expect(text).not.toContain('Pending sync');
   });
 });

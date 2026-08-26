@@ -1,16 +1,24 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, output, signal } from '@angular/core';
 import { HlmButtonImports } from '@spartan-ng/helm/button';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 
 import { I18n } from '../i18n/translations';
+import { Sync } from '../offline/sync';
 import { PageHeading } from '../shared/page-heading';
-import { Vehicle, VehiclesApi } from './vehicles-api';
+import { Vehicle, VehiclePayload, VehiclesApi } from './vehicles-api';
 import { VehicleForm } from './vehicle-form';
+
+type PendingVehicleView = VehiclePayload & { uuid: string };
+
+type DisplayVehicle =
+  | { kind: 'server'; vehicle: Vehicle }
+  | { kind: 'pending'; vehicle: PendingVehicleView };
 
 /**
  * The vehicles screen: lists the owner's vehicles and orchestrates the
- * create/edit form and the delete confirmation. Shown once the app is
- * unlocked; vehicles live server-side, so this screen needs connectivity.
+ * create/edit form and the delete confirmation. Server vehicles are listed
+ * alongside queued offline-created vehicles, which show a pending badge and
+ * become real server vehicles once they sync.
  */
 @Component({
   selector: 'app-vehicles',
@@ -19,6 +27,7 @@ import { VehicleForm } from './vehicle-form';
 })
 export class Vehicles {
   private readonly api = inject(VehiclesApi);
+  private readonly sync = inject(Sync);
   protected readonly i18n = inject(I18n);
 
   readonly viewVehicle = output<Vehicle>();
@@ -30,6 +39,34 @@ export class Vehicles {
   protected readonly editing = signal<Vehicle | null | undefined>(undefined);
   protected readonly confirmingDeleteId = signal<number | null>(null);
   protected readonly deleting = signal(false);
+
+  protected readonly pendingEntries = computed(() =>
+    this.sync.entries().filter((entry) => entry.type === 'vehicle'),
+  );
+
+  protected readonly displayed = computed<DisplayVehicle[]>(() => {
+    const server: DisplayVehicle[] = this.vehicles().map((vehicle) => ({ kind: 'server', vehicle }));
+    const pending: DisplayVehicle[] = this.pendingEntries().map((entry) => ({
+      kind: 'pending',
+      vehicle: { uuid: entry.uuid, ...(entry.payload as unknown as VehiclePayload) },
+    }));
+    return [...server, ...pending];
+  });
+
+  /** Tracks queued vehicle uuids; when one clears (synced), reload the server list. */
+  private readonly syncedVehicleUuids = new Set<string>();
+  private readonly reloadAfterSync = effect(() => {
+    const uuids = new Set(this.pendingEntries().map((entry) => entry.uuid));
+    for (const uuid of [...this.syncedVehicleUuids]) {
+      if (!uuids.has(uuid)) {
+        this.syncedVehicleUuids.delete(uuid);
+        void this.load();
+      }
+    }
+    for (const uuid of uuids) {
+      this.syncedVehicleUuids.add(uuid);
+    }
+  });
 
   constructor() {
     void this.load();
@@ -61,6 +98,10 @@ export class Vehicles {
       }
       return vehicles.map((vehicle) => (vehicle.id === saved.id ? saved : vehicle));
     });
+    this.editing.set(undefined);
+  }
+
+  protected onQueued(): void {
     this.editing.set(undefined);
   }
 

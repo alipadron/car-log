@@ -2,6 +2,7 @@
   <app-vehicle-form
     [vehicle]="editing() ?? null"
     (saved)="onSaved($event)"
+    (queued)="onQueued()"
     (cancelled)="onCancelled()"
   />
 } @else {
@@ -13,24 +14,33 @@
 
   @if (loading()) {
     <p class="text-muted-foreground">Loading…</p>
-  } @else if (vehicles().length === 0 && !error()) {
+  } @else if (displayed().length === 0 && !error()) {
     <p class="text-muted-foreground mb-4">
       {{ i18n.t()('vehicles.empty') }}
     </p>
   } @else {
     <ul class="flex flex-col gap-3">
-      @for (vehicle of vehicles(); track vehicle.id) {
+      @for (item of displayed(); track item.kind === 'server' ? 's' + item.vehicle.id : 'p' + item.vehicle.uuid) {
         <li hlmCard>
           <div hlmCardHeader>
-            <h3 hlmCardTitle>{{ vehicle.name }}</h3>
+            <div class="flex items-center justify-between gap-2">
+              <h3 hlmCardTitle>{{ item.vehicle.name }}</h3>
+              @if (item.kind === 'pending') {
+                <span class="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs">
+                  {{ i18n.t()('pending.badge') }}
+                </span>
+              }
+            </div>
             <p hlmCardDescription>
-              {{ vehicle.make }} {{ vehicle.model }} · {{ vehicle.year }} · {{ vehicle.type }}
+              {{ item.vehicle.make }} {{ item.vehicle.model }} · {{ item.vehicle.year }} · {{ item.vehicle.type }}
             </p>
           </div>
 
           <div hlmCardContent>
-            @if (confirmingDeleteId() === vehicle.id) {
-              <p class="text-sm">{{ i18n.t()('vehicles.delete.confirm', { name: vehicle.name }) }}</p>
+            @if (item.kind === 'pending') {
+              <p class="text-muted-foreground text-sm">{{ i18n.t()('vehicles.pending.hint') }}</p>
+            } @else if (confirmingDeleteId() === item.vehicle.id) {
+              <p class="text-sm">{{ i18n.t()('vehicles.delete.confirm', { name: item.vehicle.name }) }}</p>
               <div class="mt-2 flex gap-2">
                 <button
                   hlmBtn
@@ -38,7 +48,7 @@
                   type="button"
                   class="flex-1"
                   [disabled]="deleting()"
-                  (click)="deleteVehicle(vehicle)"
+                  (click)="deleteVehicle(item.vehicle)"
                 >
                   {{ deleting() ? i18n.t()('vehicles.delete.deleting') : i18n.t()('vehicles.delete.it') }}
                 </button>
@@ -57,9 +67,9 @@
                 hlmBtn
                 type="button"
                 class="w-full"
-                (click)="onViewVehicle(vehicle)"
+                (click)="onViewVehicle(item.vehicle)"
               >
-                {{ vehicle.name }}
+                {{ item.vehicle.name }}
               </button>
               <div class="mt-2 flex gap-2">
                 <button
@@ -67,7 +77,7 @@
                   variant="outline"
                   type="button"
                   class="flex-1"
-                  (click)="editVehicle(vehicle)"
+                  (click)="editVehicle(item.vehicle)"
                 >
                   {{ i18n.t()('vehicles.edit') }}
                 </button>
@@ -76,7 +86,7 @@
                   variant="destructive"
                   type="button"
                   class="flex-1"
-                  (click)="confirmingDeleteId.set(vehicle.id)"
+                  (click)="confirmingDeleteId.set(item.vehicle.id)"
                 >
                   {{ i18n.t()('vehicles.delete') }}
                 </button>

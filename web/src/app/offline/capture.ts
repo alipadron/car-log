@@ -6,12 +6,15 @@ import {
   RepairPayload,
   VehicleDetailApi,
 } from '../vehicles/vehicle-detail-api';
+import { Vehicle, VehiclePayload, VehiclesApi } from '../vehicles/vehicles-api';
 import { isConnectionFailure } from './connection-error';
 import { Connectivity } from './connectivity';
-import { Outbox, OutboxEntryType } from './outbox';
+import { Outbox, OutboxEntry, OutboxEntryType } from './outbox';
 import { Sync } from './sync';
 
 export type CaptureResult = { status: 'saved' } | { status: 'queued' };
+
+export type VehicleCaptureResult = { status: 'saved'; vehicle: Vehicle } | { status: 'queued' };
 
 /**
  * Routes entry creation through the outbox when the server cannot be reached:
@@ -23,6 +26,7 @@ export type CaptureResult = { status: 'saved' } | { status: 'queued' };
 @Service()
 export class Capture {
   private readonly api = inject(VehicleDetailApi);
+  private readonly vehiclesApi = inject(VehiclesApi);
   private readonly outbox = inject(Outbox);
   private readonly connectivity = inject(Connectivity);
   private readonly sync = inject(Sync);
@@ -39,15 +43,33 @@ export class Capture {
     return this.create('maintenance_event', vehicleId, payload, (p) => this.api.createMaintenanceEvent(vehicleId, p));
   }
 
+  async createVehicle(payload: VehiclePayload): Promise<VehicleCaptureResult> {
+    const uuid = crypto.randomUUID();
+    if (this.connectivity.unreachable()) {
+      await this.enqueue('vehicle', uuid, payload);
+      return { status: 'queued' };
+    }
+    try {
+      const vehicle = await this.vehiclesApi.create({ ...payload, uuid });
+      return { status: 'saved', vehicle };
+    } catch (error) {
+      if (isConnectionFailure(error)) {
+        await this.enqueue('vehicle', uuid, payload);
+        return { status: 'queued' };
+      }
+      throw error;
+    }
+  }
+
   private async create<P>(
-    type: OutboxEntryType,
+    type: Exclude<OutboxEntryType, 'vehicle'>,
     vehicleId: number,
     payload: P,
     send: (payload: P & { uuid: string }) => Promise<unknown>,
   ): Promise<CaptureResult> {
     const uuid = crypto.randomUUID();
     if (this.connectivity.unreachable()) {
-      await this.enqueue(type, vehicleId, uuid, payload);
+      await this.enqueue(type, uuid, payload, vehicleId);
       return { status: 'queued' };
     }
     try {
@@ -55,15 +77,26 @@ export class Capture {
       return { status: 'saved' };
     } catch (error) {
       if (isConnectionFailure(error)) {
-        await this.enqueue(type, vehicleId, uuid, payload);
+        await this.enqueue(type, uuid, payload, vehicleId);
         return { status: 'queued' };
       }
       throw error;
     }
   }
 
-  private async enqueue(type: OutboxEntryType, vehicleId: number, uuid: string, payload: unknown): Promise<void> {
-    await this.outbox.enqueue({ type, vehicle_id: vehicleId, uuid, payload: payload as Record<string, unknown> });
+  private async enqueue(
+    type: OutboxEntryType,
+    uuid: string,
+    payload: unknown,
+    vehicleId?: number,
+  ): Promise<void> {
+    const entry: Omit<OutboxEntry, 'id' | 'created_at'> = {
+      type,
+      uuid,
+      payload: payload as Record<string, unknown>,
+      ...(vehicleId !== undefined ? { vehicle_id: vehicleId } : {}),
+    };
+    await this.outbox.enqueue(entry);
     await this.sync.refreshPending();
   }
 }

@@ -3,8 +3,24 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { Connectivity } from '../offline/connectivity';
+import { Outbox } from '../offline/outbox';
+import { FakeOutbox } from '../offline/outbox.fake';
 import { Settings } from '../settings/settings';
+import { Vehicle } from './vehicles-api';
 import { VehicleForm } from './vehicle-form';
+
+function makeVehicle(): Vehicle {
+  return {
+    id: 1,
+    uuid: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    name: 'Daily driver',
+    type: 'car',
+    make: 'Toyota',
+    model: 'Corolla',
+    year: 2015,
+    created_at: '2026-08-19T00:00:00+00:00',
+  };
+}
 
 describe('VehicleForm', () => {
   let httpTesting: HttpTestingController;
@@ -48,11 +64,26 @@ describe('VehicleForm', () => {
     fixture.detectChanges();
   }
 
+  function fillValidForm(): void {
+    setInput('#name', 'Daily driver');
+    setInput('#make', 'Toyota');
+    setInput('#model', 'Corolla');
+    setInput('#year', '2020');
+  }
+
+  async function settle(): Promise<void> {
+    await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [VehicleForm],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
+    // Capture enqueues offline creates; jsdom has no IndexedDB.
+    TestBed.overrideProvider(Outbox, { useValue: new FakeOutbox() });
     httpTesting = TestBed.inject(HttpTestingController);
 
     fixture = TestBed.createComponent(VehicleForm);
@@ -104,16 +135,33 @@ describe('VehicleForm', () => {
     expect(updatedText).toContain('Ingresa el año.');
   });
 
-  it('fails fast with an offline message instead of saving when the server is unreachable', () => {
+  it('queues a new vehicle offline and emits queued without calling the API', async () => {
+    let queued = false;
+    let saved = false;
+    fixture.componentInstance.saved.subscribe(() => (saved = true));
+    fixture.componentInstance.queued.subscribe(() => (queued = true));
+
     TestBed.inject(Connectivity).reportServerFailure();
     fixture.detectChanges();
-
-    setInput('#name', 'My Car');
-    setInput('#make', 'Toyota');
-    setInput('#model', 'Corolla');
-    setInput('#year', '2020');
-
+    fillValidForm();
     submitForm();
+    await settle();
+
+    expect(queued).toBe(true);
+    expect(saved).toBe(false);
+    expect(element().textContent).not.toContain('Could not save');
+    expect(element().textContent).not.toContain("You're offline");
+  });
+
+  it('fails fast with an offline message when editing offline', async () => {
+    fixture.componentRef.setInput('vehicle', makeVehicle());
+    fixture.detectChanges();
+
+    TestBed.inject(Connectivity).reportServerFailure();
+    fixture.detectChanges();
+    setInput('#name', 'Weekend car');
+    submitForm();
+    await settle();
 
     expect(element().textContent).toContain(
       'Vehicles can only be saved when the server is reachable.',

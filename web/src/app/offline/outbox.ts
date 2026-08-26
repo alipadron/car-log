@@ -1,17 +1,19 @@
 import { Service } from '@angular/core';
 
-export type OutboxEntryType = 'odometer_entry' | 'repair' | 'maintenance_event';
+export type OutboxEntryType = 'vehicle' | 'odometer_entry' | 'repair' | 'maintenance_event';
 
 /**
  * One queued create-operation captured offline. `id` is the IndexedDB
  * auto-increment key and defines replay order. `payload` is the full create
  * payload including the client-generated `uuid` the server dedupes on.
+ * `vehicle_id` is absent for vehicle entries (the vehicle itself is being
+ * created) and for pending vehicles referenced by client uuid.
  */
 export interface OutboxEntry {
   id: number;
   uuid: string;
   type: OutboxEntryType;
-  vehicle_id: number;
+  vehicle_id?: number;
   payload: Record<string, unknown>;
   created_at: string;
 }

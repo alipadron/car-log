@@ -6,6 +6,7 @@ import {
   RepairPayload,
   VehicleDetailApi,
 } from '../vehicles/vehicle-detail-api';
+import { VehiclePayload, VehiclesApi } from '../vehicles/vehicles-api';
 import { Outbox, OutboxEntry } from './outbox';
 import { ReplayEngine } from './replay';
 
@@ -18,6 +19,7 @@ import { ReplayEngine } from './replay';
 export class Sync {
   private readonly outbox = inject(Outbox);
   private readonly api = inject(VehicleDetailApi);
+  private readonly vehiclesApi = inject(VehiclesApi);
   private readonly engine = new ReplayEngine({
     outbox: this.outbox,
     send: (entry) => this.sendEntry(entry),
@@ -58,23 +60,30 @@ export class Sync {
   }
 
   private async sendEntry(entry: OutboxEntry): Promise<void> {
+    // The outbox stores the client uuid on the entry, not inside `payload`;
+    // restore it so every replayed create carries the uuid the server dedupes
+    // on (ADR 0001 idempotency).
+    const payload = { ...entry.payload, uuid: entry.uuid };
     switch (entry.type) {
+      case 'vehicle':
+        await this.vehiclesApi.create(payload as unknown as VehiclePayload & { uuid: string });
+        return;
       case 'odometer_entry':
         await this.api.createOdometerEntry(
-          entry.vehicle_id,
-          entry.payload as unknown as OdometerEntryPayload & { uuid: string },
+          entry.vehicle_id!,
+          payload as unknown as OdometerEntryPayload & { uuid: string },
         );
         return;
       case 'repair':
         await this.api.createRepair(
-          entry.vehicle_id,
-          entry.payload as unknown as RepairPayload & { uuid: string },
+          entry.vehicle_id!,
+          payload as unknown as RepairPayload & { uuid: string },
         );
         return;
       case 'maintenance_event':
         await this.api.createMaintenanceEvent(
-          entry.vehicle_id,
-          entry.payload as unknown as MaintenanceEventPayload & { uuid: string },
+          entry.vehicle_id!,
+          payload as unknown as MaintenanceEventPayload & { uuid: string },
         );
         return;
     }

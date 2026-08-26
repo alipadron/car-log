@@ -28,8 +28,9 @@ kept product-shaped so multi-user is possible later without a rewrite.
 - **Outbox** — the client-side queue (IndexedDB) holding entries captured
   while offline. Replayed to the API when connectivity returns, then
   cleared. Client-only concept; the server never sees it. Capture scope is
-  odometer entries, repairs, and maintenance events — vehicle creation
-  requires connectivity — vehicle creation and editing are online-only.
+  vehicle creation, odometer entries, repairs, and maintenance events —
+  vehicle editing is online-only. A queued vehicle shows as "pending sync"
+  and appears as a normal vehicle once it syncs.
 
 ## Settled decisions
 
@@ -47,7 +48,7 @@ kept product-shaped so multi-user is possible later without a rewrite.
 | 10 | Stack | **Laravel 13 API-only** + **Angular PWA**, PHP 8.5, SQLite. (Livewire was considered and dropped: server-driven rendering can't work offline, and Angular is the owner's expertise.) |
 | 11 | i18n & units | Configurable UI language, distance unit (km/mi), and currency from day one. |
 | 12 | Schedules | Seeded templates per vehicle type, editable, custom allowed. |
-| 13 | Offline sync | IndexedDB outbox on the device; entries captured offline are replayed to the API in order when the server is reachable, then cleared. Append-mostly data + single user ⇒ no conflict resolution beyond ordered replay. Capture scope: odometer entries, repairs, maintenance events — vehicle creation and editing require connectivity (v1). |
+| 13 | Offline sync | IndexedDB outbox on the device; entries captured offline are replayed to the API in order when the server is reachable, then cleared. Append-mostly data + single user ⇒ no conflict resolution beyond ordered replay. Capture scope: vehicle creation, odometer entries, repairs, maintenance events — vehicle editing is online-only. |
 | 14 | Design foundations | Tool-first minimal: spartan/ui (brain + helm) on Tailwind v4, class-based dark mode with toggle, no component CSS files. See `docs/adr/0003-spartan-ui.md` and `docs/design.md`. |
 
 ## Data model sketch

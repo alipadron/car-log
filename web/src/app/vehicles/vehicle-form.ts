@@ -6,6 +6,7 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n, msg } from '../i18n/translations';
+import { Capture } from '../offline/capture';
 import { Connectivity } from '../offline/connectivity';
 import { PageHeading } from '../shared/page-heading';
 import { Vehicle, VehiclePayload, VehiclesApi, VehicleType } from './vehicles-api';
@@ -29,11 +30,14 @@ interface VehicleFormModel {
 })
 export class VehicleForm {
   private readonly api = inject(VehiclesApi);
+  private readonly capture = inject(Capture);
   private readonly connectivity = inject(Connectivity);
   protected readonly i18n = inject(I18n);
 
   readonly vehicle = input<Vehicle | null>(null);
   readonly saved = output<Vehicle>();
+  /** Emitted when the new vehicle was queued offline for later sync. */
+  readonly queued = output<void>();
   readonly cancelled = output<void>();
 
   protected readonly model = linkedSignal<VehicleFormModel>(() => {
@@ -72,8 +76,10 @@ export class VehicleForm {
   protected save(): void {
     submit(this.vehicleForm, async () => {
       this.error.set(null);
+      const existing = this.vehicle();
 
-      if (this.connectivity.unreachable()) {
+      // Creating a vehicle queues offline; editing is online-only.
+      if (existing && this.connectivity.unreachable()) {
         this.error.set(msg('vehicle_form.error.offline'));
         return;
       }
@@ -90,12 +96,17 @@ export class VehicleForm {
           year: Number(value.year),
         };
 
-        const existing = this.vehicle();
-        const saved = existing
-          ? await this.api.update(existing.id, payload)
-          : await this.api.create({ uuid: crypto.randomUUID(), ...payload });
-
-        this.saved.emit(saved);
+        if (existing) {
+          const saved = await this.api.update(existing.id, payload);
+          this.saved.emit(saved);
+        } else {
+          const result = await this.capture.createVehicle(payload);
+          if (result.status === 'saved') {
+            this.saved.emit(result.vehicle);
+          } else {
+            this.queued.emit();
+          }
+        }
       } catch {
         this.error.set(msg('vehicle_form.error'));
       } finally {
