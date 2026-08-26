@@ -49,7 +49,7 @@
       }
 
       @if (error()) {
-        <p class="text-destructive text-sm" role="alert">{{ error() }}</p>
+        <p class="text-destructive text-sm" role="alert">{{ i18n.t()(error()!) }}</p>
       }
     </div>
   </div>

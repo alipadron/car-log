@@ -2,6 +2,7 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
+import { Connectivity } from '../offline/connectivity';
 import { Settings } from '../settings/settings';
 import { VehicleForm } from './vehicle-form';
 
@@ -30,9 +31,20 @@ describe('VehicleForm', () => {
   }
 
   function submitEmpty(): void {
+    submitForm();
+  }
+
+  function submitForm(): void {
     element()
       .querySelector('form')!
       .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+  }
+
+  function setInput(selector: string, value: string): void {
+    const input = element().querySelector<HTMLInputElement>(selector)!;
+    input.value = value;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
     fixture.detectChanges();
   }
 
@@ -90,5 +102,21 @@ describe('VehicleForm', () => {
     expect(updatedText).toContain('Ingresa la marca.');
     expect(updatedText).toContain('Ingresa el modelo.');
     expect(updatedText).toContain('Ingresa el año.');
+  });
+
+  it('fails fast with an offline message instead of saving when the server is unreachable', () => {
+    TestBed.inject(Connectivity).reportServerFailure();
+    fixture.detectChanges();
+
+    setInput('#name', 'My Car');
+    setInput('#make', 'Toyota');
+    setInput('#model', 'Corolla');
+    setInput('#year', '2020');
+
+    submitForm();
+
+    expect(element().textContent).toContain(
+      'Vehicles can only be saved when the server is reachable.',
+    );
   });
 });

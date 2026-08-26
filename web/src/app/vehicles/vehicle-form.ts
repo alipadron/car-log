@@ -6,6 +6,7 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmLabel } from '@spartan-ng/helm/label';
 
 import { I18n, msg } from '../i18n/translations';
+import { Connectivity } from '../offline/connectivity';
 import { PageHeading } from '../shared/page-heading';
 import { Vehicle, VehiclePayload, VehiclesApi, VehicleType } from './vehicles-api';
 
@@ -28,6 +29,7 @@ interface VehicleFormModel {
 })
 export class VehicleForm {
   private readonly api = inject(VehiclesApi);
+  private readonly connectivity = inject(Connectivity);
   protected readonly i18n = inject(I18n);
 
   readonly vehicle = input<Vehicle | null>(null);
@@ -70,6 +72,12 @@ export class VehicleForm {
   protected save(): void {
     submit(this.vehicleForm, async () => {
       this.error.set(null);
+
+      if (this.connectivity.unreachable()) {
+        this.error.set(msg('vehicle_form.error.offline'));
+        return;
+      }
+
       this.submitting.set(true);
 
       try {
@@ -89,7 +97,7 @@ export class VehicleForm {
 
         this.saved.emit(saved);
       } catch {
-        this.error.set('Could not save the vehicle. Check your connection and try again.');
+        this.error.set(msg('vehicle_form.error'));
       } finally {
         this.submitting.set(false);
       }
